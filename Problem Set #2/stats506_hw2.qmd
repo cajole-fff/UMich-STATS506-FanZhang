@@ -1,7 +1,7 @@
 ---
 title: "STATS506 Problem Set #02"
 author: "Fan Zhang"
-date: "09/10/2023"
+date: "09/24/2023"
 format:
     html:
         embed-resources: true 
@@ -11,8 +11,28 @@ editor:
     render-on-save: false 
 ---
 
-GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506.git](https://github.com/cajole-fff/UMich-STATS506.git)
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
 
-## Problem 1 - Wine data
+## Problem 1 - Dice Game 
 
-is this change committed?
+Let's play a dice game. It costs $2 to play. You roll a single 6-sided die.
+* On a roll of 2, 4, or 6, you win the amount on the roll (e.g. a roll of 4 wins $4).
+* On a roll of 1, 3, or 5, you lose.
+We're going to implement this in different ways. Each function takes in as input the number of dice to roll, and each function returns your total winnings or loses. 
+
+a. Implement various versions of this game. 
+
+Version 1. Implement this game using a loop over the die rolls. 
+
+```{r}
+play_dice_loop <- function(num_die_rolls = 1){
+    winnings <- 0
+    for(i in 1:num_die_rolls){
+        roll <- sample(1:6, 1)
+        winnings <- winnings + (1 - 2 * (roll %% 2)) * roll
+    }
+    return(winnings)
+}
+```
+
+Version 2.
