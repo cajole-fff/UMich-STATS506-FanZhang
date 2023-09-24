@@ -1,0 +1,19 @@
+---
+title: "STATS506 Problem Set #02"
+author: "Fan Zhang"
+date: "09/10/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506.git](https://github.com/cajole-fff/UMich-STATS506.git)
+
+## Problem 1 - Wine data
+
+
+这是一个超链接到[Quarto官网](https://quarto.org/)的例子。
