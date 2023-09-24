@@ -14,6 +14,5 @@ editor:
 GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506.git](https://github.com/cajole-fff/UMich-STATS506.git)
 
 ## Problem 1 - Wine data
-test change
 
-这是一个超链接到[Quarto官网](https://quarto.org/)的例子。
+is this change committed?
