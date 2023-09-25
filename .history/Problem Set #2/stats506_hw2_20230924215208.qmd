@@ -136,19 +136,19 @@ As shown above, `play_dice_vt` is fastest, and  `play_dice_lp` is slowest. It is
 
 ```{r}
 # Run a Monte Carlo simulation
-monte_carlo <- function(num_simulations = 10000, num_die_rolls = 100){
+monte_carlo <- function(num_simulations = 1000, num_die_rolls = 100){
     winnings <- rep(0, num_simulations)
     for(i in 1:num_simulations){
         winnings[i] <- play_dice_vt(num_die_rolls)
     }
     return(winnings)
 }
-sim_result <- monte_carlo(10000, 100)
+sim_result <- monte_carlo(100000, 100)
 # Calculate average winning amount
 cat("Average winning amount:", mean(sim_result), "\n")
 # Histogram of winning amount with normal distribution
-freq_table <- table(sim_result) / length(sim_result)
-barplot(freq_table, main = "Frequency Distribution of sim_result", xlab = "sim_result")
-# hist(sim_result, breaks = 100)
-curve(dnorm(x, mean = mean(sim_result), sd = sd(si)), col = "red", add = TRUE)
+hist(sim_result, breaks = 100, freq = FALSE, main = "Histogram of winning amount", xlab = "Winning amount")
+# Add a normal curve
+curve(dnorm(x, mean = mean(sim_result), sd = sd(sim_result)), col = "red", lwd = 2, add = TRUE)
 ```
+

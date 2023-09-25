@@ -152,3 +152,17 @@ hist(sim_result, breaks = 100, freq = FALSE, main = "Histogram of winning amount
 curve(dnorm(x, mean = mean(sim_result), sd = sd(sim_result)), col = "red", lwd = 2, add = TRUE)
 ```
 
+According to the simulation above, the winning amount roughly follows a normal distribution with non-zero mean, and the average winning amount is 49.9001, which is much greater than 0. Therefore, this is not a fair game. 
+
+
+## Problem 2 - Linear Regression 
+
+Download the cars data set available at [https://corgis-edu.github.io/corgis/csv/cars/](https://corgis-edu.github.io/corgis/csv/cars/). The goal is to examine the relationship between horsepower and highway gas mileage.
+
+```{r}
+# Load the data 
+cars <- read.csv('./cars.csv')
+summary(cars)
+```
+
+**a. The names of the variables in this data are way too long. Rename the columns of the data to more reasonable lengths.** 
