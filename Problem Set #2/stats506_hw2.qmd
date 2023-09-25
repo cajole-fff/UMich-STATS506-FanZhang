@@ -15,7 +15,7 @@ GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](http
 
 ## Problem 1 - Dice Game 
 
-Let's play a dice game. It costs $2 to play. You roll a single 6-sided die.
+<!-- Let's play a dice game. It costs $2 to play. You roll a single 6-sided die.
 * On a roll of 2, 4, or 6, you win the amount on the roll (e.g. a roll of 4 wins $4).
 * On a roll of 1, 3, or 5, you lose.
 We're going to implement this in different ways. Each function takes in as input the number of dice to roll, and each function returns your total winnings or loses. 
@@ -152,7 +152,7 @@ hist(sim_result, breaks = 100, freq = FALSE, main = "Histogram of winning amount
 curve(dnorm(x, mean = mean(sim_result), sd = sd(sim_result)), col = "red", lwd = 2, add = TRUE)
 ```
 
-According to the simulation above, the winning amount roughly follows a normal distribution with non-zero mean, and the average winning amount is 49.9001, which is much greater than 0. Therefore, this is not a fair game. 
+According to the simulation above, the winning amount roughly follows a normal distribution with non-zero mean, and the average winning amount is 49.9001, which is much greater than 0. Therefore, this is not a fair game.  -->
 
 
 ## Problem 2 - Linear Regression 
@@ -166,3 +166,40 @@ summary(cars)
 ```
 
 **a. The names of the variables in this data are way too long. Rename the columns of the data to more reasonable lengths.** 
+
+```{r}
+colnames(cars) <- c('height', 'length', 'width', 'driveline', 'engine_type', 'hybrid', 'num_fwd_gears', 'transmission', 'city_mpg', 'fuel_type', 'highway_mpg', 'classification', 'id', 'make', 'model_year', 'year', 'horsepower', 'torque')
+summary(cars)
+```
+
+**b. Restrict the data to cars whose Fuel Type is "Gasoline".** 
+
+```{r}
+cars <- cars[cars$fuel_type == 'Gasoline', ]
+```
+
+**c. Fit a linear regression model predicting MPG on the highway. The predictor of interest is horsepower. Control for:**
+
+* **The torque of the engine**
+* **All three dimensions of the car**
+* **The year the car was released, as a categorical variable**
+
+**Briefly discuss the estimated relationship between horsepower and highway MPG. Be precise about the interpretation of the estimated coefficient.**
+
+```{r}
+# Fit a linear regression model
+model <- lm(highway_mpg ~ horsepower + torque + height + length + width + factor(year), data = cars)
+summary(model)
+```
+
+**d. It seems reasonable that there may be an interaction between horsepower and torque. Refit the model (with `lm()`) and generate an interaction plot, showing how the relationship between horsepower and MPG changes as torque changes. Choose reasonable values of horsepower, and show lines for three different reasonable values of torque.** 
+
+**(Hint: If you choose to use the interactions package for this, look at the `at =` argument to help with how year comes into play - choose a reasonable single value for year.)**
+
+```{r}
+# Refit the model
+model <- lm(highway_mpg ~ horsepower * torque + height + length + width + factor(year), data = cars)
+# Generate an interaction plot
+library(interactions)
+# plot(interaction.plot(x.factor = cars$torque, trace.factor = cars$horsepower, response = cars$highway_mpg, fun = mean, type = 'b', legend = TRUE)
+```
