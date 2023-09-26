@@ -3070,7 +3070,7 @@ vertical-align: -.125em;
 <pre><code>59 71 48 </code></pre>
 </div>
 </div>
-<p>According to the output of the above cell, the number of wines within each calss is correct as reported in <code>wine.names</code>.</p>
+<p>According to the output of the above cell, the number of wines within each class is correct as reported in <code>wine.names</code>.</p>
 <p><strong>c. Use the data to answer the following questions:</strong></p>
 <ol type="1">
 <li>The wine with the highest alcohol content belongs to which class?</li>
@@ -3355,7 +3355,7 @@ $power
 <p>This code defines two functions: <code>determine_poker_hand</code> for determining the name of a poker hand, and <code>simulate_poker_round</code> for simulating a round of poker with a specified number of players. You can adjust the <code>num_players</code> argument in <code>simulate_poker_round</code> to simulate a game with the desired number of players. The code then deals cards to each player, displays their hands, and determines the name of each hand using the <code>determine_poker_hand</code> function.</p>
 <p><strong>b. See if the code runs without modification in R. If so, demonstrate it with a range of inputs. If not, fix it and explain what you fixed.</strong></p>
 <p>It cannot run without modification in R.</p>
-<p>In line <code>7</code> of function <code>determine_poker_hand</code>, it calculates the maximum and minimum value of <code>ranks</code>. However, accroding to line <code>64</code>, the input value of <code>ranks</code> contains something cannot be compared:</p>
+<p>In line <code>7</code> of function <code>determine_poker_hand</code>, it calculates the maximum and minimum value of <code>ranks</code>. However, according to line <code>64</code>, the input value of <code>ranks</code> contains something cannot be compared:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>ranks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>, <span class="st">&quot;Jack&quot;</span>, <span class="st">&quot;Queen&quot;</span>, <span class="st">&quot;King&quot;</span>, <span class="st">&quot;Ace&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -3442,39 +3442,39 @@ $power
 <div class="cell-output cell-output-stdout">
 <pre><code>Player 1 hand: 
    Rank     Suit
-14    2 Diamonds
-30    5    Clubs
-43    5   Spades
-51   13   Spades
-28    3    Clubs
-Hand Name: Pair 
+23   11 Diamonds
+45    7   Spades
+1     2   Hearts
+49   11   Spades
+10   11   Hearts
+Hand Name: Three of a Kind 
 
 Player 2 hand: 
    Rank     Suit
-27    2    Clubs
-16    4 Diamonds
-37   12    Clubs
-15    3 Diamonds
-33    8    Clubs
-Hand Name: High Card 
+38   13    Clubs
+34    9    Clubs
+6     7   Hearts
+8     9   Hearts
+20    8 Diamonds
+Hand Name: Pair 
 
 Player 3 hand: 
    Rank     Suit
-49   11   Spades
-12   13   Hearts
-26   14 Diamonds
-25   13 Diamonds
-2     3   Hearts
-Hand Name: Pair 
+44    6   Spades
+36   11    Clubs
+13   14   Hearts
+21    9 Diamonds
+46    8   Spades
+Hand Name: High Card 
 
 Player 4 hand: 
    Rank     Suit
-20    8 Diamonds
-8     9   Hearts
-5     6   Hearts
-4     5   Hearts
+12   13   Hearts
+28    3    Clubs
 7     8   Hearts
-Hand Name: Pair </code></pre>
+15    3 Diamonds
+25   13 Diamonds
+Hand Name: Two Pair </code></pre>
 </div>
 </div>
 <p><strong>d. Determine whether the code produces accurate results. Explain how you made this determination. Check at least the following:</strong></p>
@@ -3493,108 +3493,108 @@ Hand Name: Pair </code></pre>
 <ul>
 <li>Does it ensure no duplicates in cards across hands? What happens if you ask for more than 10 hands to be dealt (as there are only 52 cards in a standard deck)?</li>
 </ul>
-<p>Yes. It ensures no duplicates in card accross hands by <code>deck &lt;- deck[sample(nrow(deck)), ]</code>, which shuffles the deck. If I ask for more than 10 hands to be dealt, for example,</p>
+<p>Yes. It ensures no duplicates in card across hands by <code>deck &lt;- deck[sample(nrow(deck)), ]</code>, which shuffles the deck. If I ask for more than 10 hands to be dealt, for example,</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">simulate_poker_round</span>(<span class="dv">11</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Player 1 hand: 
    Rank     Suit
-9    10   Hearts
-48   10   Spades
-16    4 Diamonds
-17    5 Diamonds
-7     8   Hearts
-Hand Name: Pair 
+37   12    Clubs
+4     5   Hearts
+18    6 Diamonds
+34    9    Clubs
+39   14    Clubs
+Hand Name: High Card 
 
 Player 2 hand: 
    Rank     Suit
-41    3   Spades
-26   14 Diamonds
-19    7 Diamonds
-36   11    Clubs
+48   10   Spades
 35   10    Clubs
-Hand Name: High Card 
+11   12   Hearts
+15    3 Diamonds
+21    9 Diamonds
+Hand Name: Pair 
 
 Player 3 hand: 
    Rank     Suit
-24   12 Diamonds
-3     4   Hearts
-30    5    Clubs
 38   13    Clubs
-52   14   Spades
-Hand Name: High Card 
+36   11    Clubs
+23   11 Diamonds
+42    4   Spades
+46    8   Spades
+Hand Name: Pair 
 
 Player 4 hand: 
    Rank     Suit
-39   14    Clubs
-25   13 Diamonds
-1     2   Hearts
-5     6   Hearts
-49   11   Spades
+52   14   Spades
+16    4 Diamonds
+8     9   Hearts
+22   10 Diamonds
+40    2   Spades
 Hand Name: High Card 
 
 Player 5 hand: 
    Rank     Suit
-4     5   Hearts
-14    2 Diamonds
-42    4   Spades
-11   12   Hearts
-29    4    Clubs
+19    7 Diamonds
+1     2   Hearts
+5     6   Hearts
+44    6   Spades
+25   13 Diamonds
 Hand Name: Pair 
 
 Player 6 hand: 
    Rank   Suit
+32    7  Clubs
+50   12 Spades
+33    8  Clubs
 47    9 Spades
-28    3  Clubs
-13   14 Hearts
-37   12  Clubs
-46    8 Spades
+12   13 Hearts
 Hand Name: High Card 
 
 Player 7 hand: 
-   Rank     Suit
-40    2   Spades
-45    7   Spades
-20    8 Diamonds
-18    6 Diamonds
-22   10 Diamonds
+   Rank   Suit
+29    4  Clubs
+27    2  Clubs
+49   11 Spades
+2     3 Hearts
+43    5 Spades
 Hand Name: High Card 
 
 Player 8 hand: 
    Rank     Suit
-31    6    Clubs
-50   12   Spades
-23   11 Diamonds
-34    9    Clubs
-8     9   Hearts
-Hand Name: Pair 
+28    3    Clubs
+13   14   Hearts
+24   12 Diamonds
+45    7   Spades
+17    5 Diamonds
+Hand Name: High Card 
 
 Player 9 hand: 
-   Rank     Suit
-32    7    Clubs
-15    3 Diamonds
-21    9 Diamonds
-33    8    Clubs
-43    5   Spades
+   Rank   Suit
+6     7 Hearts
+3     4 Hearts
+10   11 Hearts
+41    3 Spades
+51   13 Spades
 Hand Name: High Card 
 
 Player 10 hand: 
-   Rank   Suit
-44    6 Spades
-27    2  Clubs
-2     3 Hearts
-10   11 Hearts
-6     7 Hearts
-Hand Name: High Card 
+   Rank     Suit
+9    10   Hearts
+14    2 Diamonds
+30    5    Clubs
+20    8 Diamonds
+7     8   Hearts
+Hand Name: Pair 
 
 Player 11 hand: 
-     Rank   Suit
-12     13 Hearts
-51     13 Spades
-NA     NA   &lt;NA&gt;
-NA.1   NA   &lt;NA&gt;
-NA.2   NA   &lt;NA&gt;
-Hand Name: Pair </code></pre>
+     Rank     Suit
+26     14 Diamonds
+31      6    Clubs
+NA     NA     &lt;NA&gt;
+NA.1   NA     &lt;NA&gt;
+NA.2   NA     &lt;NA&gt;
+Hand Name: High Card </code></pre>
 </div>
 </div>
 <p>As shown above, the 11th player’s hand has only two cards, which is because there are only 52 cards in a standard deck. It’s better to prompt an error message rather than print the hand with only two cards. Therefore, I changed the function <code>simulate_poker_round</code> into</p>
