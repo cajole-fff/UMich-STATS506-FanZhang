@@ -181,7 +181,7 @@ model <- lm(highway_mpg ~ horsepower + torque + height + length + width + factor
 summary(model)
 ```
 
-According to the summary above, highway MPG is positively correlated with horsepowe, with an estimated coefficient `0.0163556`. If other variable remain unchanged, highway MPG will increase by `0.0163556` for each unit increase in horsepower. Moreover, since the p-value is close to 0, the statistical inference is significant. 
+According to the summary above, highway MPG is positively correlated with horsepowe, with an estimated coefficient `0.0163556`. If other variable remain unchanged, highway MPG will increase by `0.0163556` for each unit increase in horsepower. Since the 
 
 
 **d. It seems reasonable that there may be an interaction between horsepower and torque. Refit the model (with `lm()`) and generate an interaction plot, showing how the relationship between horsepower and MPG changes as torque changes. Choose reasonable values of horsepower, and show lines for three different reasonable values of torque.** 
