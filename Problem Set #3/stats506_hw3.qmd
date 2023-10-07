@@ -292,4 +292,4 @@ According to the query, the most common genre of movie is `Sports`, and there ar
 dbGetQuery(sakila, "SELECT country, COUNT(*) AS count FROM customer_list GROUP BY country HAVING count = 9")
 ```
 
-According to the query, the country `United Kindom` has exactly 9 customers.
+According to the query, the country `United Kindom` has exactly 9 customers. 
