@@ -293,3 +293,84 @@ dbGetQuery(sakila, "SELECT country, COUNT(*) AS count FROM customer_list GROUP B
 ```
 
 According to the query, the country `United Kindom` has exactly 9 customers. 
+
+## Problem 3 - US Records
+
+Download the "US - 500 Records" data from [https://www.briandunning.com/sample-data/](https://www.briandunning.com/sample-data/) and import it into R. This is entirely fake data - use it to answer the following questions.
+
+```{r}
+# Load the data
+us500 <- read.csv("./us-500/us-500.csv", header = TRUE, sep = ",")
+summary(us500)
+head(us500)
+```
+
+**a. What proportion of email addresses are hosted at a domain with TLD ".net"? (E.g. in the email, "angrycat\@greemail.org", "freemail.org" is the domain, with TLD (top-level domain) ".org".)**
+
+```{r}
+# FInd the proportion of email addresses with TLD ".net" in the data
+library(stringr)
+us500$TLD <- str_extract(us500$email, "\\.[a-z]+$")
+table(us500$TLD)
+prop.table(table(us500$TLD))
+```
+
+According to the calculation, the proportion of email addresses with TLD ".net" is 0.140.
+
+**b. What proportion of email addresses have at least one non alphanumeric character in them?**
+
+```{r}
+# Extract the email name from the email address
+us500$emailname <- str_extract(us500$email, "^.+?(?=@)")
+# Extract the non alphanumeric character from the email name
+us500$non_alphanumeric <- str_extract(us500$emailname, "[^[:alnum:]]")
+# Count the proportion of non-NA values in the column
+cat("The proportion of email addresses with at least one non alphanumeric character in them is", sum(!is.na(us500$non_alphanumeric))/nrow(us500), ".\n")
+```
+
+**c. What is the most common area code amonst all phone numbers?**
+
+```{r}
+# Extract the area code from the phone number
+us500$area_code1 <- str_extract(us500$phone1, "^\\d{3}")
+us500$area_code2 <- str_extract(us500$phone2, "^\\d{3}")
+
+# Calculate the sum of two table and order by count 
+area_code_count <- table(us500$area_code1) + table(us500$area_code2)
+# Find the most common area code
+cat("The most common area code amonst all phone numbers is", names(which.max(area_code_count)), ".\n")
+```
+
+**d. Produce a histogram of the log of the apartment numbers for all addresses. (You may assume any number after the street is an apartment number.)**
+
+```{r}
+# Extract the apartment number from the address
+us500$apartment_number <- as.numeric(str_extract(us500$address, "\\d+$"))
+# Calculate the log of the apartment number
+us500$log_apartment_number <- log(us500$apartment_number)
+# Plot the histogram
+hist(us500$log_apartment_number, main = "Histogram of the log of the apartment numbers for all addresses", xlab = "Log of the apartment number")
+```
+
+**e. [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observation about the distribution of the leading digit of real numerical data. Examine whether the apartment numbers appear to follow Benford's law. Do you think the apartment numbers would pass as real data?**
+
+```{r}
+# Extract the first digit of the apartment number
+us500$first_digit <- as.numeric(str_extract(us500$apartment_number, "^\\d"))
+
+library(benford)
+benford(us500$first_digit)
+```
+
+According to the test above, we have a p-value of $0.006859187 < 0.05$, which means the apartment numbers appear to follow Benford's law. I think the apartment numbers would also pass as real data. 
+
+**f. Repeat your analysis of Benford's law on the last digit of the street number. (E.g. if your address is "123 Main St #25", your street number is "123".)**
+
+```{r}
+# Extract the last digit of the street number
+us500$street_number <- as.numeric(str_extract(us500$address, "\\d+$"))
+us500$last_digit <- as.numeric(str_extract(us500$street_number, "\\d$"))
+benford(us500$last_digit)
+```
+
+This time we get a p-value $0.01689982 < 0.05$, which means the last digit of the street number also follows Benford's law.
