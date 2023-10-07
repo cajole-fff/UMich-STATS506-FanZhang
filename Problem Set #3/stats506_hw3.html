@@ -3168,44 +3168,47 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <p>This problem will require you to do things in Stata we have not covered. Use the Stata help, or online resources, to figure out the appropriate command(s). Use the citation as necessary.</p>
 <p><strong>a. Download the file VIX_D from this location, and determine how to read it into Stata. Then download the file DEMO_D from this location. Note that each page contains a link to a documentation file for that data set. Merge the two files to create a single Stata dataset, using the SEQN variable for merging. Keep only records which matched. Print our your total sample size, showing that it is now 6,980.</strong></p>
 <p>According to the <a href="https://www.stata.com/manuals13/dimportsasxport.pdf">documentation</a>, I can use <code>import sasxport</code> to read SAS XPORT files into Stata.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1"></a>. import sasxport5 VIX_D.XPT, clear</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1"></a>. import sasxport5 VIX_D.XPT, <span class="kw">clear</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>According to the <a href="https://www.stata.com/manuals/dmerge.pdf">documentation</a>, I can use <code>merge</code> to merge two datasets.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href="#cb2-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2"></a>```{stata}</span>
-<span id="cb2-3"><a href="#cb2-3"></a>. import sasxport5 VIX_D.XPT, clear</span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a>. save VIX_D.dta, replace</span>
-<span id="cb2-6"><a href="#cb2-6"></a>file VIX_D.dta saved</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1"></a>. import sasxport5 VIX_D.XPT, <span class="kw">clear</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a>. <span class="kw">save</span> VIX_D.dta, <span class="kw">replace</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>file VIX_D.dta saved</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a>. import sasxport5 DEMO_D.XPT, <span class="kw">clear</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a>. import sasxport5 DEMO_D.XPT, clear</span>
-<span id="cb2-9"><a href="#cb2-9"></a></span>
-<span id="cb2-10"><a href="#cb2-10"></a>. save DEMO_D.dta, replace</span>
-<span id="cb2-11"><a href="#cb2-11"></a>file DEMO_D.dta saved</span>
+<span id="cb2-8"><a href="#cb2-8"></a>. <span class="kw">save</span> DEMO_D.dta, <span class="kw">replace</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>file DEMO_D.dta saved</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>. <span class="kw">use</span> VIX_D.dta, <span class="kw">clear</span></span>
 <span id="cb2-12"><a href="#cb2-12"></a></span>
-<span id="cb2-13"><a href="#cb2-13"></a>. use VIX_D.dta, clear</span>
+<span id="cb2-13"><a href="#cb2-13"></a>. <span class="kw">merge</span> 1:1 seqn <span class="kw">using</span> <span class="st">&quot;DEMO_D.dta&quot;</span>, <span class="kw">keep</span>(<span class="fu">match</span>)</span>
 <span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a>. merge 1:1 seqn using &quot;DEMO_D.dta&quot;, keep(match)</span>
-<span id="cb2-16"><a href="#cb2-16"></a></span>
-<span id="cb2-17"><a href="#cb2-17"></a>    Result                      Number of obs</span>
-<span id="cb2-18"><a href="#cb2-18"></a>    -----------------------------------------</span>
-<span id="cb2-19"><a href="#cb2-19"></a>    Not matched                             0</span>
-<span id="cb2-20"><a href="#cb2-20"></a>    Matched                             6,980  (_merge==3)</span>
-<span id="cb2-21"><a href="#cb2-21"></a>    -----------------------------------------</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-15"><a href="#cb2-15"></a>    Result                      Number <span class="kw">of</span> <span class="kw">obs</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>    -----------------------------------------</span>
+<span id="cb2-17"><a href="#cb2-17"></a>    Not matched                             0</span>
+<span id="cb2-18"><a href="#cb2-18"></a>    Matched                             6,980  (<span class="dt">_merge</span>==3)</span>
+<span id="cb2-19"><a href="#cb2-19"></a>    -----------------------------------------</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><strong>b. Without fitting any models, estimate the proportion of responedents within each 10-year age bracket (e.g. 0-9, 10-19, 20-29, etc) who wear glasses/contact lenses for distance vision. Produce a nice table with the results.</strong></p>
 <p>According to the <a href="https://www.stata.com/manuals13/rtabulatetwoway.pdf">documentation</a>, I can use <code>tabulate</code> with option <code>row</code> to produce a two-way table.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1"></a>. tabulate viq220 age_group, row</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1"></a>. <span class="kw">tabulate</span> viq220 age_group, <span class="ot">row</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a>+----------------+</span>
 <span id="cb3-4"><a href="#cb3-4"></a>| Key            |</span>
 <span id="cb3-5"><a href="#cb3-5"></a>|----------------|</span>
-<span id="cb3-6"><a href="#cb3-6"></a>|   frequency    |</span>
-<span id="cb3-7"><a href="#cb3-7"></a>| row percentage |</span>
+<span id="cb3-6"><a href="#cb3-6"></a>|   <span class="kw">frequency</span>    |</span>
+<span id="cb3-7"><a href="#cb3-7"></a>| <span class="ot">row</span> percentage |</span>
 <span id="cb3-8"><a href="#cb3-8"></a>+----------------+</span>
 <span id="cb3-9"><a href="#cb3-9"></a></span>
 <span id="cb3-10"><a href="#cb3-10"></a>Glasses/co |</span>
 <span id="cb3-11"><a href="#cb3-11"></a>     ntact |</span>
 <span id="cb3-12"><a href="#cb3-12"></a>    lenses |</span>
-<span id="cb3-13"><a href="#cb3-13"></a>  worn for |                                        age_group</span>
+<span id="cb3-13"><a href="#cb3-13"></a>  worn <span class="kw">for</span> |                                        age_group</span>
 <span id="cb3-14"><a href="#cb3-14"></a>  distance |        10         20         30         40         50         60         70         80 |     Total</span>
 <span id="cb3-15"><a href="#cb3-15"></a>-----------+----------------------------------------------------------------------------------------+----------</span>
 <span id="cb3-16"><a href="#cb3-16"></a>         1 |       670        306        269        286        335        392        299        208 |     2,765 </span>
@@ -3219,43 +3222,45 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb3-24"><a href="#cb3-24"></a>-----------+----------------------------------------------------------------------------------------+----------</span>
 <span id="cb3-25"><a href="#cb3-25"></a>     Total |     2,088        939        750        773        609        630        447        311 |     6,547 </span>
 <span id="cb3-26"><a href="#cb3-26"></a>           |     31.89      14.34      11.46      11.81       9.30       9.62       6.83       4.75 |    100.00 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><strong>c. Fit three logistic regression models predicting whether a respondent wears glasses/contact lenses for distance vision. Produce a table presenting the estimated odds ratios for the coefficients in each model, along with the sample size for the model, the pseudo <span class="math inline">\(R^2\)</span>, and AIC values.</strong></p>
 <p>Predictors:</p>
 <ol type="1">
 <li>Predictor: age</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>// Create a new variable viq220_reg for logistic regression</span>
-<span id="cb4-2"><a href="#cb4-2"></a>// If viq220 == 1, viq220_reg == 1; otherwise, viq220_reg == 0</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">// Create a new variable viq220_reg for logistic regression</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">// If viq220 == 1, viq220_reg == 1; otherwise, viq220_reg == 0</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a>. gen viq220_reg = (viq220 == 1)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>. <span class="kw">gen</span> viq220_reg = (viq220 == 1)</span>
 <span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a>. logit viq220_reg ridageyr</span>
+<span id="cb4-6"><a href="#cb4-6"></a>. <span class="kw">logit</span> viq220_reg ridageyr</span>
 <span id="cb4-7"><a href="#cb4-7"></a></span>
 <span id="cb4-8"><a href="#cb4-8"></a>Iteration 0:  Log likelihood = -4686.4561  </span>
 <span id="cb4-9"><a href="#cb4-9"></a>Iteration 1:  Log likelihood = -4482.1322  </span>
 <span id="cb4-10"><a href="#cb4-10"></a>Iteration 2:  Log likelihood = -4481.7871  </span>
 <span id="cb4-11"><a href="#cb4-11"></a>Iteration 3:  Log likelihood = -4481.7871  </span>
 <span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a>Logistic regression                                     Number of obs =  6,980</span>
-<span id="cb4-14"><a href="#cb4-14"></a>                                                        LR chi2(1)    = 409.34</span>
-<span id="cb4-15"><a href="#cb4-15"></a>                                                        Prob &gt; chi2   = 0.0000</span>
+<span id="cb4-13"><a href="#cb4-13"></a>Logistic regression                                     Number <span class="kw">of</span> <span class="kw">obs</span> =  6,980</span>
+<span id="cb4-14"><a href="#cb4-14"></a>                                                        LR <span class="fu">chi2</span>(1)    = 409.34</span>
+<span id="cb4-15"><a href="#cb4-15"></a>                                                        Prob &gt; <span class="fu">chi2</span>   = 0.0000</span>
 <span id="cb4-16"><a href="#cb4-16"></a>Log likelihood = -4481.7871                             Pseudo R2     = 0.0437</span>
 <span id="cb4-17"><a href="#cb4-17"></a></span>
 <span id="cb4-18"><a href="#cb4-18"></a>------------------------------------------------------------------------------</span>
 <span id="cb4-19"><a href="#cb4-19"></a>  viq220_reg | Coefficient  Std. err.      z    P&gt;|z|     [95% conf. interval]</span>
 <span id="cb4-20"><a href="#cb4-20"></a>-------------+----------------------------------------------------------------</span>
 <span id="cb4-21"><a href="#cb4-21"></a>    ridageyr |   .0228955    .001157    19.79   0.000     .0206278    .0251631</span>
-<span id="cb4-22"><a href="#cb4-22"></a>       _cons |   -1.30923   .0521054   -25.13   0.000    -1.411355   -1.207106</span>
+<span id="cb4-22"><a href="#cb4-22"></a>       <span class="dt">_cons</span> |   -1.30923   .0521054   -25.13   0.000    -1.411355   -1.207106</span>
 <span id="cb4-23"><a href="#cb4-23"></a>------------------------------------------------------------------------------</span>
 <span id="cb4-24"><a href="#cb4-24"></a></span>
-<span id="cb4-25"><a href="#cb4-25"></a>// Produce a table presenting the estimated odds ratios for the coefficients in each model,</span>
-<span id="cb4-26"><a href="#cb4-26"></a>// along with the sample size for the model, the pseudo  𝑅2 , and AIC values.</span>
-<span id="cb4-27"><a href="#cb4-27"></a>. esttab, cells(b(star fmt(3)) se(par fmt(3))) noobs</span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="co">// Produce a table presenting the estimated odds ratios for the coefficients in each model,</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="co">// along with the sample size for the model, the pseudo  𝑅2 , and AIC values.</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>. esttab, cells(b(<span class="kw">star</span> fmt(3)) se(par fmt(3))) <span class="kw">noobs</span></span>
 <span id="cb4-28"><a href="#cb4-28"></a></span>
 <span id="cb4-29"><a href="#cb4-29"></a></span>
-<span id="cb4-30"><a href="#cb4-30"></a>. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title(&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;)</span>
+<span id="cb4-30"><a href="#cb4-30"></a>. esttab, <span class="kw">eform</span> se(%9.2f) <span class="kw">star</span>(* 0.1 ** 0.05 *** 0.01) <span class="kw">stats</span>(<span class="kw">N</span> <span class="kw">r2_p</span> aic) <span class="bn">title</span>(<span class="st">&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;</span>)</span>
 <span id="cb4-31"><a href="#cb4-31"></a></span>
-<span id="cb4-32"><a href="#cb4-32"></a>Logistic Regression Models for Glasses/Contact Lenses</span>
+<span id="cb4-32"><a href="#cb4-32"></a>Logistic Regression Models <span class="kw">for</span> Glasses/Contact Lenses</span>
 <span id="cb4-33"><a href="#cb4-33"></a>----------------------------</span>
 <span id="cb4-34"><a href="#cb4-34"></a>                      (1)   </span>
 <span id="cb4-35"><a href="#cb4-35"></a>               viq220_reg   </span>
@@ -3264,25 +3269,27 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb4-38"><a href="#cb4-38"></a>ridageyr            1.023***</span>
 <span id="cb4-39"><a href="#cb4-39"></a>                   (0.00)   </span>
 <span id="cb4-40"><a href="#cb4-40"></a>----------------------------</span>
-<span id="cb4-41"><a href="#cb4-41"></a>N                    6980   </span>
-<span id="cb4-42"><a href="#cb4-42"></a>r2_p               0.0437   </span>
+<span id="cb4-41"><a href="#cb4-41"></a><span class="kw">N</span>                    6980   </span>
+<span id="cb4-42"><a href="#cb4-42"></a><span class="kw">r2_p</span>               0.0437   </span>
 <span id="cb4-43"><a href="#cb4-43"></a>aic                8967.6   </span>
 <span id="cb4-44"><a href="#cb4-44"></a>----------------------------</span>
-<span id="cb4-45"><a href="#cb4-45"></a>Exponentiated coefficients; Standard errors in parentheses</span>
-<span id="cb4-46"><a href="#cb4-46"></a>* p&lt;0.1, ** p&lt;0.05, *** p&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-45"><a href="#cb4-45"></a>Exponentiated coefficients; Standard errors <span class="kw">in</span> parentheses</span>
+<span id="cb4-46"><a href="#cb4-46"></a>* <span class="kw">p</span>&lt;0.1, ** <span class="kw">p</span>&lt;0.05, *** <span class="kw">p</span>&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ol start="2" type="1">
 <li>Predictors: age, race, gender</li>
 </ol>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>. logit viq220_reg ridageyr ridreth1 riagendr</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1"></a>. <span class="kw">logit</span> viq220_reg ridageyr ridreth1 riagendr</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>Iteration 0:  Log likelihood = -4686.4561  </span>
 <span id="cb5-4"><a href="#cb5-4"></a>Iteration 1:  Log likelihood = -4432.2417  </span>
 <span id="cb5-5"><a href="#cb5-5"></a>Iteration 2:  Log likelihood = -4431.2822  </span>
 <span id="cb5-6"><a href="#cb5-6"></a>Iteration 3:  Log likelihood = -4431.2821  </span>
 <span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>Logistic regression                                     Number of obs =  6,980</span>
-<span id="cb5-9"><a href="#cb5-9"></a>                                                        LR chi2(3)    = 510.35</span>
-<span id="cb5-10"><a href="#cb5-10"></a>                                                        Prob &gt; chi2   = 0.0000</span>
+<span id="cb5-8"><a href="#cb5-8"></a>Logistic regression                                     Number <span class="kw">of</span> <span class="kw">obs</span> =  6,980</span>
+<span id="cb5-9"><a href="#cb5-9"></a>                                                        LR <span class="fu">chi2</span>(3)    = 510.35</span>
+<span id="cb5-10"><a href="#cb5-10"></a>                                                        Prob &gt; <span class="fu">chi2</span>   = 0.0000</span>
 <span id="cb5-11"><a href="#cb5-11"></a>Log likelihood = -4431.2821                             Pseudo R2     = 0.0544</span>
 <span id="cb5-12"><a href="#cb5-12"></a></span>
 <span id="cb5-13"><a href="#cb5-13"></a>------------------------------------------------------------------------------</span>
@@ -3291,12 +3298,12 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb5-16"><a href="#cb5-16"></a>    ridageyr |   .0230428   .0011715    19.67   0.000     .0207468    .0253388</span>
 <span id="cb5-17"><a href="#cb5-17"></a>    ridreth1 |   .1117481   .0218705     5.11   0.000     .0688826    .1546135</span>
 <span id="cb5-18"><a href="#cb5-18"></a>    riagendr |   .4392872   .0511169     8.59   0.000     .3390998    .5394745</span>
-<span id="cb5-19"><a href="#cb5-19"></a>       _cons |  -2.305327   .1152477   -20.00   0.000    -2.531209   -2.079446</span>
+<span id="cb5-19"><a href="#cb5-19"></a>       <span class="dt">_cons</span> |  -2.305327   .1152477   -20.00   0.000    -2.531209   -2.079446</span>
 <span id="cb5-20"><a href="#cb5-20"></a>------------------------------------------------------------------------------</span>
 <span id="cb5-21"><a href="#cb5-21"></a></span>
-<span id="cb5-22"><a href="#cb5-22"></a>. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title(&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;)</span>
+<span id="cb5-22"><a href="#cb5-22"></a>. esttab, <span class="kw">eform</span> se(%9.2f) <span class="kw">star</span>(* 0.1 ** 0.05 *** 0.01) <span class="kw">stats</span>(<span class="kw">N</span> <span class="kw">r2_p</span> aic) <span class="bn">title</span>(<span class="st">&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;</span>)</span>
 <span id="cb5-23"><a href="#cb5-23"></a></span>
-<span id="cb5-24"><a href="#cb5-24"></a>Logistic Regression Models for Glasses/Contact Lenses</span>
+<span id="cb5-24"><a href="#cb5-24"></a>Logistic Regression Models <span class="kw">for</span> Glasses/Contact Lenses</span>
 <span id="cb5-25"><a href="#cb5-25"></a>----------------------------</span>
 <span id="cb5-26"><a href="#cb5-26"></a>                      (1)   </span>
 <span id="cb5-27"><a href="#cb5-27"></a>               viq220_reg   </span>
@@ -3311,25 +3318,27 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb5-36"><a href="#cb5-36"></a>riagendr            1.552***</span>
 <span id="cb5-37"><a href="#cb5-37"></a>                   (0.08)   </span>
 <span id="cb5-38"><a href="#cb5-38"></a>----------------------------</span>
-<span id="cb5-39"><a href="#cb5-39"></a>N                    6980   </span>
-<span id="cb5-40"><a href="#cb5-40"></a>r2_p               0.0544   </span>
+<span id="cb5-39"><a href="#cb5-39"></a><span class="kw">N</span>                    6980   </span>
+<span id="cb5-40"><a href="#cb5-40"></a><span class="kw">r2_p</span>               0.0544   </span>
 <span id="cb5-41"><a href="#cb5-41"></a>aic                8870.6   </span>
 <span id="cb5-42"><a href="#cb5-42"></a>----------------------------</span>
-<span id="cb5-43"><a href="#cb5-43"></a>Exponentiated coefficients; Standard errors in parentheses</span>
-<span id="cb5-44"><a href="#cb5-44"></a>* p&lt;0.1, ** p&lt;0.05, *** p&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-43"><a href="#cb5-43"></a>Exponentiated coefficients; Standard errors <span class="kw">in</span> parentheses</span>
+<span id="cb5-44"><a href="#cb5-44"></a>* <span class="kw">p</span>&lt;0.1, ** <span class="kw">p</span>&lt;0.05, *** <span class="kw">p</span>&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ol start="3" type="1">
 <li>Predictors: age, race, gender, Poverty Income ratio</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>. logit viq220_reg ridageyr ridreth1 riagendr indfmpir</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1"></a>. <span class="kw">logit</span> viq220_reg ridageyr ridreth1 riagendr indfmpir</span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
 <span id="cb6-3"><a href="#cb6-3"></a>Iteration 0:  Log likelihood = -4467.3703  </span>
 <span id="cb6-4"><a href="#cb6-4"></a>Iteration 1:  Log likelihood = -4192.5804  </span>
 <span id="cb6-5"><a href="#cb6-5"></a>Iteration 2:  Log likelihood = -4191.1253  </span>
 <span id="cb6-6"><a href="#cb6-6"></a>Iteration 3:  Log likelihood = -4191.1249  </span>
 <span id="cb6-7"><a href="#cb6-7"></a></span>
-<span id="cb6-8"><a href="#cb6-8"></a>Logistic regression                                     Number of obs =  6,638</span>
-<span id="cb6-9"><a href="#cb6-9"></a>                                                        LR chi2(4)    = 552.49</span>
-<span id="cb6-10"><a href="#cb6-10"></a>                                                        Prob &gt; chi2   = 0.0000</span>
+<span id="cb6-8"><a href="#cb6-8"></a>Logistic regression                                     Number <span class="kw">of</span> <span class="kw">obs</span> =  6,638</span>
+<span id="cb6-9"><a href="#cb6-9"></a>                                                        LR <span class="fu">chi2</span>(4)    = 552.49</span>
+<span id="cb6-10"><a href="#cb6-10"></a>                                                        Prob &gt; <span class="fu">chi2</span>   = 0.0000</span>
 <span id="cb6-11"><a href="#cb6-11"></a>Log likelihood = -4191.1249                             Pseudo R2     = 0.0618</span>
 <span id="cb6-12"><a href="#cb6-12"></a></span>
 <span id="cb6-13"><a href="#cb6-13"></a>------------------------------------------------------------------------------</span>
@@ -3339,12 +3348,12 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb6-17"><a href="#cb6-17"></a>    ridreth1 |   .0785997   .0229914     3.42   0.001     .0335374     .123662</span>
 <span id="cb6-18"><a href="#cb6-18"></a>    riagendr |   .4610131   .0526539     8.76   0.000     .3578133    .5642129</span>
 <span id="cb6-19"><a href="#cb6-19"></a>    indfmpir |    .150954   .0165745     9.11   0.000     .1184686    .1834394</span>
-<span id="cb6-20"><a href="#cb6-20"></a>       _cons |  -2.570646   .1246284   -20.63   0.000    -2.814913   -2.326379</span>
+<span id="cb6-20"><a href="#cb6-20"></a>       <span class="dt">_cons</span> |  -2.570646   .1246284   -20.63   0.000    -2.814913   -2.326379</span>
 <span id="cb6-21"><a href="#cb6-21"></a>------------------------------------------------------------------------------</span>
 <span id="cb6-22"><a href="#cb6-22"></a></span>
-<span id="cb6-23"><a href="#cb6-23"></a>. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title(&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;)</span>
+<span id="cb6-23"><a href="#cb6-23"></a>. esttab, <span class="kw">eform</span> se(%9.2f) <span class="kw">star</span>(* 0.1 ** 0.05 *** 0.01) <span class="kw">stats</span>(<span class="kw">N</span> <span class="kw">r2_p</span> aic) <span class="bn">title</span>(<span class="st">&quot;Logistic Regression Models for Glasses/Contact Lenses&quot;</span>)</span>
 <span id="cb6-24"><a href="#cb6-24"></a></span>
-<span id="cb6-25"><a href="#cb6-25"></a>Logistic Regression Models for Glasses/Contact Lenses</span>
+<span id="cb6-25"><a href="#cb6-25"></a>Logistic Regression Models <span class="kw">for</span> Glasses/Contact Lenses</span>
 <span id="cb6-26"><a href="#cb6-26"></a>----------------------------</span>
 <span id="cb6-27"><a href="#cb6-27"></a>                      (1)   </span>
 <span id="cb6-28"><a href="#cb6-28"></a>               viq220_reg   </span>
@@ -3362,21 +3371,102 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb6-40"><a href="#cb6-40"></a>indfmpir            1.163***</span>
 <span id="cb6-41"><a href="#cb6-41"></a>                   (0.02)   </span>
 <span id="cb6-42"><a href="#cb6-42"></a>----------------------------</span>
-<span id="cb6-43"><a href="#cb6-43"></a>N                    6638   </span>
-<span id="cb6-44"><a href="#cb6-44"></a>r2_p               0.0618   </span>
+<span id="cb6-43"><a href="#cb6-43"></a><span class="kw">N</span>                    6638   </span>
+<span id="cb6-44"><a href="#cb6-44"></a><span class="kw">r2_p</span>               0.0618   </span>
 <span id="cb6-45"><a href="#cb6-45"></a>aic                8392.2   </span>
 <span id="cb6-46"><a href="#cb6-46"></a>----------------------------</span>
-<span id="cb6-47"><a href="#cb6-47"></a>Exponentiated coefficients; Standard errors in parentheses</span>
-<span id="cb6-48"><a href="#cb6-48"></a>* p&lt;0.1, ** p&lt;0.05, *** p&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-47"><a href="#cb6-47"></a>Exponentiated coefficients; Standard errors <span class="kw">in</span> parentheses</span>
+<span id="cb6-48"><a href="#cb6-48"></a>* <span class="kw">p</span>&lt;0.1, ** <span class="kw">p</span>&lt;0.05, *** <span class="kw">p</span>&lt;0.01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><strong>d. From the third model from the previous part, discuss whether the <em>odds</em> of men and women being wears of glasses/contact lenses for distance vision differs. Test whether the <em>proportion</em> of wearers of glasses/contact lenses for distance vision differs between men and women. Include the results of the test and its interpretation.</strong></p>
-<p>According to the summary of the third model, the odds of <code>riagendr</code> is <span class="math inline">\(1.586\)</span>. Therefore, the odds of men and women being wears of glasses/contact lenses for distance vision differs. Let’s do a test using Stata:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource {stata} number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>. test riagendr</span>
+<p>According to the summary of the third model, the odds of <code>riagendr</code> is <span class="math inline">\(1.586\)</span>. Therefore, the odds of men and women being wears of glasses contact lenses for distance vision differs. Let’s do a test using Stata:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1"></a>. <span class="kw">test</span> riagendr</span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a> ( 1)  [viq220_reg]riagendr = 0</span>
 <span id="cb7-4"><a href="#cb7-4"></a></span>
-<span id="cb7-5"><a href="#cb7-5"></a>           chi2(  1) =   76.66</span>
-<span id="cb7-6"><a href="#cb7-6"></a>         Prob &gt; chi2 =    0.0000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-5"><a href="#cb7-5"></a>           <span class="fu">chi2</span>(  1) =   76.66</span>
+<span id="cb7-6"><a href="#cb7-6"></a>         Prob &gt; <span class="fu">chi2</span> =    0.0000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>According to the test result, since <code>Prob &gt; chi2 = 0.0000</code>, the variable <code>riagendr</code> is a significant predictor of the outcome variable, which means the odds of men and women being wears of glasses/contact lenses for distance vision differs.</p>
+</section>
+<section id="problem-2---sakila" class="level2">
+<h2 class="anchored" data-anchor-id="problem-2---sakila">Problem 2 - Sakila</h2>
+<p>Load the “sakila” database discussed in class into SQLite. It can be downloaded from <a href="https://github.com/bradleygrant/sakila-sqlite3">https://github.com/bradleygrant/sakila-sqlite3</a>.</p>
+<p><strong>a. Aside from English, what language is most common for films? Answer this with a single SQL query.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">library</span>(RSQLite)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co"># Load the &quot;sakila&quot; database discussed in class into SQLite</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>sakila <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), <span class="st">&#39;./sakila-sqlite3/sakila_master.db&#39;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="fu">dbListTables</span>(sakila)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] &quot;actor&quot;                  &quot;address&quot;                &quot;category&quot;              
+ [4] &quot;city&quot;                   &quot;country&quot;                &quot;customer&quot;              
+ [7] &quot;customer_list&quot;          &quot;film&quot;                   &quot;film_actor&quot;            
+[10] &quot;film_category&quot;          &quot;film_list&quot;              &quot;film_text&quot;             
+[13] &quot;inventory&quot;              &quot;language&quot;               &quot;payment&quot;               
+[16] &quot;rental&quot;                 &quot;sales_by_film_category&quot; &quot;sales_by_store&quot;        
+[19] &quot;staff&quot;                  &quot;staff_list&quot;             &quot;store&quot;                 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">dbGetQuery</span>(sakila, <span class="st">&quot;SELECT * FROM language&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  language_id     name         last_update
+1           1  English 2020-12-23 07:12:12
+2           2  Italian 2020-12-23 07:12:12
+3           3 Japanese 2020-12-23 07:12:12
+4           4 Mandarin 2020-12-23 07:12:12
+5           5   French 2020-12-23 07:12:12
+6           6   German 2020-12-23 07:12:12</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Count the number of films in each language</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">dbGetQuery</span>(sakila, <span class="st">&quot;SELECT language_id, COUNT(*) AS count FROM film GROUP BY language_id&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  language_id count
+1           1  1000</code></pre>
+</div>
+</div>
+<p>According to the query, only English is used in the films.</p>
+<p><strong>b. What genre of movie is the most common in the data, and how may movies are of this genre?</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Count the number of films in each genre</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">dbGetQuery</span>(sakila, <span class="st">&quot;SELECT category_id, COUNT(*) AS count FROM film_category GROUP BY category_id ORDER BY count DESC&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   category_id count
+1           15    74
+2            9    73
+3            8    69
+4            6    68
+5            2    66
+6            1    64
+7           13    63
+8            7    62
+9           10    61
+10          14    61
+11           3    60
+12           5    58
+13           4    57
+14          16    57
+15          11    56
+16          12    51</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">dbGetQuery</span>(sakila, <span class="st">&quot;SELECT * FROM category WHERE category_id = 15&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  category_id   name         last_update
+1          15 Sports 2020-12-23 07:12:31</code></pre>
+</div>
+</div>
+<p>According to the query, the most common genre of movie is <code>Sports</code>, and there are 74 movies of this genre.</p>
+<p><strong>c. Identify which country or countries has exactly 9 customers. Answer this with a single SQL query.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># Find the country with exactly 9 customers</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="fu">dbGetQuery</span>(sakila, <span class="st">&quot;SELECT country, COUNT(*) AS count FROM customer_list GROUP BY country HAVING count = 9&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         country count
+1 United Kingdom     9</code></pre>
+</div>
+</div>
+<p>According to the query, the country <code>United Kindom</code> has exactly 9 customers.</p>
 </section>
 
 </main>

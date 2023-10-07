@@ -22,15 +22,13 @@ This problem will require you to do things in Stata we have not covered. Use the
 According to the [documentation](https://www.stata.com/manuals13/dimportsasxport.pdf), I can use `import sasxport` to read SAS XPORT files into Stata. 
 
 
-```{stata}
+```{stata, eval=FALSE}
 . import sasxport5 VIX_D.XPT, clear
 ```
 
 According to the [documentation](https://www.stata.com/manuals/dmerge.pdf), I can use `merge` to merge two datasets. 
 
-```{stata}
-
-```{stata}
+```{stata, eval=FALSE}
 . import sasxport5 VIX_D.XPT, clear
 
 . save VIX_D.dta, replace
@@ -58,7 +56,7 @@ file DEMO_D.dta saved
 According to the [documentation](https://www.stata.com/manuals13/rtabulatetwoway.pdf), I can use `tabulate` with option `row` to produce a two-way table. 
 
 
-```{stata}
+```{stata, eval=FALSE}
 . tabulate viq220 age_group, row
 
 +----------------+
@@ -93,7 +91,7 @@ Predictors:
 
 1. Predictor: age
 
-```{stata}
+```{stata, eval=FALSE}
 // Create a new variable viq220_reg for logistic regression
 // If viq220 == 1, viq220_reg == 1; otherwise, viq220_reg == 0
 
@@ -144,7 +142,7 @@ Exponentiated coefficients; Standard errors in parentheses
 
 2. Predictors: age, race, gender
 
-```{stata}
+```{stata, eval=FALSE}
 . logit viq220_reg ridageyr ridreth1 riagendr
 
 Iteration 0:  Log likelihood = -4686.4561  
@@ -194,7 +192,7 @@ Exponentiated coefficients; Standard errors in parentheses
 
 3. Predictors: age, race, gender, Poverty Income ratio
 
-```{stata}
+```{stata, eval=FALSE}
 . logit viq220_reg ridageyr ridreth1 riagendr indfmpir
 
 Iteration 0:  Log likelihood = -4467.3703  
@@ -247,9 +245,9 @@ Exponentiated coefficients; Standard errors in parentheses
 
 **d. From the third model from the previous part, discuss whether the *odds* of men and women being wears of glasses/contact lenses for distance vision differs. Test whether the *proportion* of wearers of glasses/contact lenses for distance vision differs between men and women. Include the results of the test and its interpretation.**
 
-According to the summary of the third model, the odds of `riagendr` is $1.586$. Therefore, the odds of men and women being wears of glasses/contact lenses for distance vision differs. Let's do a test using Stata: 
+According to the summary of the third model, the odds of `riagendr` is $1.586$. Therefore, the odds of men and women being wears of glasses contact lenses for distance vision differs. Let's do a test using Stata: 
 
-```{stata}
+```{stata, eval=FALSE}
 . test riagendr
 
  ( 1)  [viq220_reg]riagendr = 0
@@ -258,3 +256,40 @@ According to the summary of the third model, the odds of `riagendr` is $1.586$. 
          Prob > chi2 =    0.0000
 ```
 According to the test result, since `Prob > chi2 = 0.0000`, the variable `riagendr` is a significant predictor of the outcome variable, which means the odds of men and women being wears of glasses/contact lenses for distance vision differs.
+
+## Problem 2 - Sakila
+Load the "sakila" database discussed in class into SQLite. It can be downloaded from [https://github.com/bradleygrant/sakila-sqlite3](https://github.com/bradleygrant/sakila-sqlite3).
+
+**a. Aside from English, what language is most common for films? Answer this with a single SQL query.** 
+
+
+```{r}
+library(DBI)
+library(RSQLite)
+# Load the "sakila" database discussed in class into SQLite
+sakila <- dbConnect(RSQLite::SQLite(), './sakila-sqlite3/sakila_master.db')
+dbListTables(sakila)
+dbGetQuery(sakila, "SELECT * FROM language")
+# Count the number of films in each language
+dbGetQuery(sakila, "SELECT language_id, COUNT(*) AS count FROM film GROUP BY language_id")
+```
+
+According to the query, only English is used in the films. 
+
+**b. What genre of movie is the most common in the data, and how may movies are of this genre?**
+```{r}
+# Count the number of films in each genre
+dbGetQuery(sakila, "SELECT category_id, COUNT(*) AS count FROM film_category GROUP BY category_id ORDER BY count DESC")
+dbGetQuery(sakila, "SELECT * FROM category WHERE category_id = 15")
+```
+
+According to the query, the most common genre of movie is `Sports`, and there are 74 movies of this genre.
+
+**c. Identify which country or countries has exactly 9 customers. Answer this with a single SQL query.** 
+
+```{r}
+# Find the country with exactly 9 customers
+dbGetQuery(sakila, "SELECT country, COUNT(*) AS count FROM customer_list GROUP BY country HAVING count = 9")
+```
+
+According to the query, the country `United Kindom` has exactly 9 customers.
