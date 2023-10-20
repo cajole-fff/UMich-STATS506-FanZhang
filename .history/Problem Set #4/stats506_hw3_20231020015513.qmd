@@ -30,7 +30,6 @@ Install and load the package `nycflights13`.
 ```{r} 
 library(nycflights13)
 library(tidyverse)
-
 ```
 
 
