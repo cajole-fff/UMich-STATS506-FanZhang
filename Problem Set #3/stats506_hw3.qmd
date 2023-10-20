@@ -53,18 +53,20 @@ file DEMO_D.dta saved
 
 **b. Without fitting any models, estimate the proportion of responedents within each 10-year age bracket (e.g. 0-9, 10-19, 20-29, etc) who wear glasses/contact lenses for distance vision. Produce a nice table with the results.**
 
-According to the [documentation](https://www.stata.com/manuals13/rtabulatetwoway.pdf), I can use `tabulate` with option `row` to produce a two-way table. 
+According to the [documentation](https://www.stata.com/manuals13/rtabulatetwoway.pdf), I can use `tabulate` with option `col` to produce a two-way table. 
 
 
 ```{stata, eval=FALSE}
-. tabulate viq220 age_group, row
+. gen age_group = floor(ridageyr/10)*10
 
-+----------------+
-| Key            |
-|----------------|
-|   frequency    |
-| row percentage |
-+----------------+
+. tabulate viq220 age_group, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
 
 Glasses/co |
      ntact |
@@ -73,16 +75,16 @@ Glasses/co |
   distance |        10         20         30         40         50         60         70         80 |     Total
 -----------+----------------------------------------------------------------------------------------+----------
          1 |       670        306        269        286        335        392        299        208 |     2,765 
-           |     24.23      11.07       9.73      10.34      12.12      14.18      10.81       7.52 |    100.00 
+           |     32.09      32.59      35.87      37.00      55.01      62.22      66.89      66.88 |     42.23 
 -----------+----------------------------------------------------------------------------------------+----------
          2 |     1,418        631        481        487        274        238        148        103 |     3,780 
-           |     37.51      16.69      12.72      12.88       7.25       6.30       3.92       2.72 |    100.00 
+           |     67.91      67.20      64.13      63.00      44.99      37.78      33.11      33.12 |     57.74 
 -----------+----------------------------------------------------------------------------------------+----------
          9 |         0          2          0          0          0          0          0          0 |         2 
-           |      0.00     100.00       0.00       0.00       0.00       0.00       0.00       0.00 |    100.00 
+           |      0.00       0.21       0.00       0.00       0.00       0.00       0.00       0.00 |      0.03 
 -----------+----------------------------------------------------------------------------------------+----------
      Total |     2,088        939        750        773        609        630        447        311 |     6,547 
-           |     31.89      14.34      11.46      11.81       9.30       9.62       6.83       4.75 |    100.00 
+           |    100.00     100.00     100.00     100.00     100.00     100.00     100.00     100.00 |    100.00  
 ```
 
 **c. Fit three logistic regression models predicting whether a respondent wears glasses/contact lenses for distance vision. Produce a table presenting the estimated odds ratios for the coefficients in each model, along with the sample size for the model, the pseudo $R^2$, and AIC values.**
@@ -358,11 +360,17 @@ hist(us500$log_apartment_number, main = "Histogram of the log of the apartment n
 # Extract the first digit of the apartment number
 us500$first_digit <- as.numeric(str_extract(us500$apartment_number, "^\\d"))
 
+# Histogram of first digit 
+hist(us500$first_digit, main = "Histogram of the first digit of the apartment number", xlab = "First digit of the apartment number")
+
+# Frequency of each digit 
+table(us500$first_digit) / sum(table(us500$first_digit))
+
 library(benford)
 benford(us500$first_digit)
 ```
 
-According to the test above, we have a p-value of $0.006859187 < 0.05$, which means the apartment numbers appear to follow Benford's law. I think the apartment numbers would also pass as real data. 
+According to the test above, we have a p-value of $0.006859187 < 0.05$, which means the apartment numbers appear *not* to follow Benford's law. I think the apartment numbers would also not pass as real data. 
 
 **f. Repeat your analysis of Benford's law on the last digit of the street number. (E.g. if your address is "123 Main St #25", your street number is "123".)**
 
@@ -373,4 +381,4 @@ us500$last_digit <- as.numeric(str_extract(us500$street_number, "\\d$"))
 benford(us500$last_digit)
 ```
 
-This time we get a p-value $0.01689982 < 0.05$, which means the last digit of the street number also follows Benford's law.
+This time we get a p-value $0.01689982 < 0.05$, which means the last digit of the street number also does not follow Benford's law. It would also not pass as real data. 

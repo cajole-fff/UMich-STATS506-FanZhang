@@ -1,0 +1,384 @@
+---
+title: "STATS506 Problem Set #03"
+author: "Fan Zhang"
+date: "10/06/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem 1 - Vision
+
+This problem will require you to do things in Stata we have not covered. Use the Stata help, or online resources, to figure out the appropriate command(s). Use the citation as necessary. 
+
+**a. Download the file VIX_D from this location, and determine how to read it into Stata. Then download the file DEMO_D from this location. Note that each page contains a link to a documentation file for that data set. Merge the two files to create a single Stata dataset, using the SEQN variable for merging. Keep only records which matched. Print our your total sample size, showing that it is now 6,980.**
+
+According to the [documentation](https://www.stata.com/manuals13/dimportsasxport.pdf), I can use `import sasxport` to read SAS XPORT files into Stata. 
+
+
+```{stata, eval=FALSE}
+. import sasxport5 VIX_D.XPT, clear
+```
+
+According to the [documentation](https://www.stata.com/manuals/dmerge.pdf), I can use `merge` to merge two datasets. 
+
+```{stata, eval=FALSE}
+. import sasxport5 VIX_D.XPT, clear
+
+. save VIX_D.dta, replace
+file VIX_D.dta saved
+
+. import sasxport5 DEMO_D.XPT, clear
+
+. save DEMO_D.dta, replace
+file DEMO_D.dta saved
+
+. use VIX_D.dta, clear
+
+. merge 1:1 seqn using "DEMO_D.dta", keep(match)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             6,980  (_merge==3)
+    -----------------------------------------
+
+```
+
+**b. Without fitting any models, estimate the proportion of responedents within each 10-year age bracket (e.g. 0-9, 10-19, 20-29, etc) who wear glasses/contact lenses for distance vision. Produce a nice table with the results.**
+
+According to the [documentation](https://www.stata.com/manuals13/rtabulatetwoway.pdf), I can use `tabulate` with option `col` to produce a two-way table. 
+
+
+```{stata, eval=FALSE}
+. gen age_group = floor(ridageyr/10)*10
+
+. tabulate viq220 age_group, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+Glasses/co |
+     ntact |
+    lenses |
+  worn for |                                        age_group
+  distance |        10         20         30         40         50         60         70         80 |     Total
+-----------+----------------------------------------------------------------------------------------+----------
+         1 |       670        306        269        286        335        392        299        208 |     2,765 
+           |     32.09      32.59      35.87      37.00      55.01      62.22      66.89      66.88 |     42.23 
+-----------+----------------------------------------------------------------------------------------+----------
+         2 |     1,418        631        481        487        274        238        148        103 |     3,780 
+           |     67.91      67.20      64.13      63.00      44.99      37.78      33.11      33.12 |     57.74 
+-----------+----------------------------------------------------------------------------------------+----------
+         9 |         0          2          0          0          0          0          0          0 |         2 
+           |      0.00       0.21       0.00       0.00       0.00       0.00       0.00       0.00 |      0.03 
+-----------+----------------------------------------------------------------------------------------+----------
+     Total |     2,088        939        750        773        609        630        447        311 |     6,547 
+           |    100.00     100.00     100.00     100.00     100.00     100.00     100.00     100.00 |    100.00  
+```
+
+**c. Fit three logistic regression models predicting whether a respondent wears glasses/contact lenses for distance vision. Produce a table presenting the estimated odds ratios for the coefficients in each model, along with the sample size for the model, the pseudo $R^2$, and AIC values.**
+
+Predictors:
+
+1. Predictor: age
+
+```{stata, eval=FALSE}
+// Create a new variable viq220_reg for logistic regression
+// If viq220 == 1, viq220_reg == 1; otherwise, viq220_reg == 0
+
+. gen viq220_reg = (viq220 == 1)
+
+. logit viq220_reg ridageyr
+
+Iteration 0:  Log likelihood = -4686.4561  
+Iteration 1:  Log likelihood = -4482.1322  
+Iteration 2:  Log likelihood = -4481.7871  
+Iteration 3:  Log likelihood = -4481.7871  
+
+Logistic regression                                     Number of obs =  6,980
+                                                        LR chi2(1)    = 409.34
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -4481.7871                             Pseudo R2     = 0.0437
+
+------------------------------------------------------------------------------
+  viq220_reg | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    ridageyr |   .0228955    .001157    19.79   0.000     .0206278    .0251631
+       _cons |   -1.30923   .0521054   -25.13   0.000    -1.411355   -1.207106
+------------------------------------------------------------------------------
+
+// Produce a table presenting the estimated odds ratios for the coefficients in each model,
+// along with the sample size for the model, the pseudo  𝑅2 , and AIC values.
+. esttab, cells(b(star fmt(3)) se(par fmt(3))) noobs
+
+
+. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title("Logistic Regression Models for Glasses/Contact Lenses")
+
+Logistic Regression Models for Glasses/Contact Lenses
+----------------------------
+                      (1)   
+               viq220_reg   
+----------------------------
+viq220_reg                  
+ridageyr            1.023***
+                   (0.00)   
+----------------------------
+N                    6980   
+r2_p               0.0437   
+aic                8967.6   
+----------------------------
+Exponentiated coefficients; Standard errors in parentheses
+* p<0.1, ** p<0.05, *** p<0.01
+```
+
+2. Predictors: age, race, gender
+
+```{stata, eval=FALSE}
+. logit viq220_reg ridageyr ridreth1 riagendr
+
+Iteration 0:  Log likelihood = -4686.4561  
+Iteration 1:  Log likelihood = -4432.2417  
+Iteration 2:  Log likelihood = -4431.2822  
+Iteration 3:  Log likelihood = -4431.2821  
+
+Logistic regression                                     Number of obs =  6,980
+                                                        LR chi2(3)    = 510.35
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -4431.2821                             Pseudo R2     = 0.0544
+
+------------------------------------------------------------------------------
+  viq220_reg | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    ridageyr |   .0230428   .0011715    19.67   0.000     .0207468    .0253388
+    ridreth1 |   .1117481   .0218705     5.11   0.000     .0688826    .1546135
+    riagendr |   .4392872   .0511169     8.59   0.000     .3390998    .5394745
+       _cons |  -2.305327   .1152477   -20.00   0.000    -2.531209   -2.079446
+------------------------------------------------------------------------------
+
+. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title("Logistic Regression Models for Glasses/Contact Lenses")
+
+Logistic Regression Models for Glasses/Contact Lenses
+----------------------------
+                      (1)   
+               viq220_reg   
+----------------------------
+viq220_reg                  
+ridageyr            1.023***
+                   (0.00)   
+
+ridreth1            1.118***
+                   (0.02)   
+
+riagendr            1.552***
+                   (0.08)   
+----------------------------
+N                    6980   
+r2_p               0.0544   
+aic                8870.6   
+----------------------------
+Exponentiated coefficients; Standard errors in parentheses
+* p<0.1, ** p<0.05, *** p<0.01
+```
+
+
+3. Predictors: age, race, gender, Poverty Income ratio
+
+```{stata, eval=FALSE}
+. logit viq220_reg ridageyr ridreth1 riagendr indfmpir
+
+Iteration 0:  Log likelihood = -4467.3703  
+Iteration 1:  Log likelihood = -4192.5804  
+Iteration 2:  Log likelihood = -4191.1253  
+Iteration 3:  Log likelihood = -4191.1249  
+
+Logistic regression                                     Number of obs =  6,638
+                                                        LR chi2(4)    = 552.49
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -4191.1249                             Pseudo R2     = 0.0618
+
+------------------------------------------------------------------------------
+  viq220_reg | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    ridageyr |   .0219737   .0012135    18.11   0.000     .0195953    .0243521
+    ridreth1 |   .0785997   .0229914     3.42   0.001     .0335374     .123662
+    riagendr |   .4610131   .0526539     8.76   0.000     .3578133    .5642129
+    indfmpir |    .150954   .0165745     9.11   0.000     .1184686    .1834394
+       _cons |  -2.570646   .1246284   -20.63   0.000    -2.814913   -2.326379
+------------------------------------------------------------------------------
+
+. esttab, eform se(%9.2f) star(* 0.1 ** 0.05 *** 0.01) stats(N r2_p aic) title("Logistic Regression Models for Glasses/Contact Lenses")
+
+Logistic Regression Models for Glasses/Contact Lenses
+----------------------------
+                      (1)   
+               viq220_reg   
+----------------------------
+viq220_reg                  
+ridageyr            1.022***
+                   (0.00)   
+
+ridreth1            1.082***
+                   (0.02)   
+
+riagendr            1.586***
+                   (0.08)   
+
+indfmpir            1.163***
+                   (0.02)   
+----------------------------
+N                    6638   
+r2_p               0.0618   
+aic                8392.2   
+----------------------------
+Exponentiated coefficients; Standard errors in parentheses
+* p<0.1, ** p<0.05, *** p<0.01
+```
+
+**d. From the third model from the previous part, discuss whether the *odds* of men and women being wears of glasses/contact lenses for distance vision differs. Test whether the *proportion* of wearers of glasses/contact lenses for distance vision differs between men and women. Include the results of the test and its interpretation.**
+
+According to the summary of the third model, the odds of `riagendr` is $1.586$. Therefore, the odds of men and women being wears of glasses contact lenses for distance vision differs. Let's do a test using Stata: 
+
+```{stata, eval=FALSE}
+. test riagendr
+
+ ( 1)  [viq220_reg]riagendr = 0
+
+           chi2(  1) =   76.66
+         Prob > chi2 =    0.0000
+```
+According to the test result, since `Prob > chi2 = 0.0000`, the variable `riagendr` is a significant predictor of the outcome variable, which means the odds of men and women being wears of glasses/contact lenses for distance vision differs.
+
+## Problem 2 - Sakila
+Load the "sakila" database discussed in class into SQLite. It can be downloaded from [https://github.com/bradleygrant/sakila-sqlite3](https://github.com/bradleygrant/sakila-sqlite3).
+
+**a. Aside from English, what language is most common for films? Answer this with a single SQL query.** 
+
+
+```{r}
+library(DBI)
+library(RSQLite)
+# Load the "sakila" database discussed in class into SQLite
+sakila <- dbConnect(RSQLite::SQLite(), './sakila-sqlite3/sakila_master.db')
+dbListTables(sakila)
+dbGetQuery(sakila, "SELECT * FROM language")
+# Count the number of films in each language
+dbGetQuery(sakila, "SELECT language_id, COUNT(*) AS count FROM film GROUP BY language_id")
+```
+
+According to the query, only English is used in the films. 
+
+**b. What genre of movie is the most common in the data, and how may movies are of this genre?**
+```{r}
+# Count the number of films in each genre
+dbGetQuery(sakila, "SELECT category_id, COUNT(*) AS count FROM film_category GROUP BY category_id ORDER BY count DESC")
+dbGetQuery(sakila, "SELECT * FROM category WHERE category_id = 15")
+```
+
+According to the query, the most common genre of movie is `Sports`, and there are 74 movies of this genre.
+
+**c. Identify which country or countries has exactly 9 customers. Answer this with a single SQL query.** 
+
+```{r}
+# Find the country with exactly 9 customers
+dbGetQuery(sakila, "SELECT country, COUNT(*) AS count FROM customer_list GROUP BY country HAVING count = 9")
+```
+
+According to the query, the country `United Kindom` has exactly 9 customers. 
+
+## Problem 3 - US Records
+
+Download the "US - 500 Records" data from [https://www.briandunning.com/sample-data/](https://www.briandunning.com/sample-data/) and import it into R. This is entirely fake data - use it to answer the following questions.
+
+```{r}
+# Load the data
+us500 <- read.csv("./us-500/us-500.csv", header = TRUE, sep = ",")
+summary(us500)
+head(us500)
+```
+
+**a. What proportion of email addresses are hosted at a domain with TLD ".net"? (E.g. in the email, "angrycat\@greemail.org", "freemail.org" is the domain, with TLD (top-level domain) ".org".)**
+
+```{r}
+# FInd the proportion of email addresses with TLD ".net" in the data
+library(stringr)
+us500$TLD <- str_extract(us500$email, "\\.[a-z]+$")
+table(us500$TLD)
+prop.table(table(us500$TLD))
+```
+
+According to the calculation, the proportion of email addresses with TLD ".net" is 0.140.
+
+**b. What proportion of email addresses have at least one non alphanumeric character in them?**
+
+```{r}
+# Extract the email name from the email address
+us500$emailname <- str_extract(us500$email, "^.+?(?=@)")
+# Extract the non alphanumeric character from the email name
+us500$non_alphanumeric <- str_extract(us500$emailname, "[^[:alnum:]]")
+# Count the proportion of non-NA values in the column
+cat("The proportion of email addresses with at least one non alphanumeric character in them is", sum(!is.na(us500$non_alphanumeric))/nrow(us500), ".\n")
+```
+
+**c. What is the most common area code amonst all phone numbers?**
+
+```{r}
+# Extract the area code from the phone number
+us500$area_code1 <- str_extract(us500$phone1, "^\\d{3}")
+us500$area_code2 <- str_extract(us500$phone2, "^\\d{3}")
+
+# Calculate the sum of two table and order by count 
+area_code_count <- table(us500$area_code1) + table(us500$area_code2)
+# Find the most common area code
+cat("The most common area code amonst all phone numbers is", names(which.max(area_code_count)), ".\n")
+```
+
+**d. Produce a histogram of the log of the apartment numbers for all addresses. (You may assume any number after the street is an apartment number.)**
+
+```{r}
+# Extract the apartment number from the address
+us500$apartment_number <- as.numeric(str_extract(us500$address, "\\d+$"))
+# Calculate the log of the apartment number
+us500$log_apartment_number <- log(us500$apartment_number)
+# Plot the histogram
+hist(us500$log_apartment_number, main = "Histogram of the log of the apartment numbers for all addresses", xlab = "Log of the apartment number")
+```
+
+**e. [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observation about the distribution of the leading digit of real numerical data. Examine whether the apartment numbers appear to follow Benford's law. Do you think the apartment numbers would pass as real data?**
+
+```{r}
+# Extract the first digit of the apartment number
+us500$first_digit <- as.numeric(str_extract(us500$apartment_number, "^\\d"))
+
+# Histogram of first digit 
+hist(us500$first_digit, main = "Histogram of the first digit of the apartment number", xlab = "First digit of the apartment number")
+
+# Frequency of each digit 
+table(us500$first_digit) / sum(table(us500$first_digit))
+
+library(benford)
+benford(us500$first_digit)
+```
+
+According to the test above, we have a p-value of $0.006859187 < 0.05$, which means the apartment numbers appear *not* to follow Benford's law. I think the apartment numbers would also not pass as real data. 
+
+**f. Repeat your analysis of Benford's law on the last digit of the street number. (E.g. if your address is "123 Main St #25", your street number is "123".)**
+
+```{r}
+# Extract the last digit of the street number
+us500$street_number <- as.numeric(str_extract(us500$address, "\\d+$"))
+us500$last_digit <- as.numeric(str_extract(us500$street_number, "\\d$"))
+benford(us500$last_digit)
+```
+
+This time we get a p-value $0.01689982 < 0.05$, which means the last digit of the street number also does not follow Benford's law. It would also not 
