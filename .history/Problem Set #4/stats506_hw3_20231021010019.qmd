@@ -60,14 +60,12 @@ flights %>%
 ```{r}
 # Generate table for the aircraft model with the fastest average speed
 flights %>%
-    inner_join(planes, by = c("tailnum")) %>%
-    group_by(model) %>%
-    summarise(avg_speed = mean(speed, na.rm = TRUE), num_flights = n()) %>%
-    filter(num_flights > 0) %>%
-    arrange(desc(avg_speed)) %>%
+    group_by(tailnum) %>%
+    summarise(mean_speed = mean(distance / air_time * 60, na.rm = TRUE), n = n()) %>%
+    filter(n > 0) %>%
+    arrange(desc(mean_speed)) %>%
     head(1) %>%
     print()
 ```
-
 
 ## Problem 3 - SAS 
