@@ -60,12 +60,26 @@ flights %>%
 ```{r}
 # Generate table for the aircraft model with the fastest average speed
 flights %>%
-    group_by(tailnum) %>%
-    summarise(mean_speed = mean(distance / air_time * 60, na.rm = TRUE), n = n()) %>%
-    filter(n > 0) %>%
-    arrange(desc(mean_speed)) %>%
+    inner_join(planes, by = c("tailnum")) %>%
+    group_by(model) %>%
+    summarise(avg_speed = mean(speed, na.rm = TRUE), num_flights = n()) %>%
+    filter(num_flights > 0) %>%
+    arrange(desc(avg_speed)) %>%
     head(1) %>%
     print()
 ```
+
+## Problem 2 - `get_temp()` 
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Load the Chicago NNMAPS data we used in the visualization lectures. Write a function `get_temp()` that allows a user to request the average temperature for a given month. The arguments should be: 
+
+- `month`: Month, either a numeric 1-12 or a string.
+- `year`: A numeric year.
+- `data`: The data set to obtain data from.
+- `celsius`: Logically indicating whether the results should be in celsius. Default `FALSE`.
+- 
+
 
 ## Problem 3 - SAS 

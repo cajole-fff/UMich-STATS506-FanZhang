@@ -1,0 +1,180 @@
+---
+title: "STATS506 Problem Set #04"
+author: "Fan Zhang"
+date: "10/19/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem 1 - Tidyverse 
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Install and load the package `nycflights13`.
+
+
+```{r} 
+# Load the packages
+library(nycflights13)
+library(tidyverse)
+```
+
+**a. Generate a table (which can just be a nicely printed tibble) reporting the mean and median departure delay per airport. Generate a second table (which again can be a nicely printed tibble) reporting the mean and median arrival delay per airport. Exclude any destination with under 10 flights. Do this exclusion through code, not manually.**
+
+**Additionally,**
+
+- Order both tables in descending mean delay.
+- Both tables should use the airport names not the airport codes.
+- Both tables should print all rows. 
+
+```{r} 
+# Generate table for mean and median departure delay per airport
+flights %>%
+    inner_join(airports, by = c("origin" = "faa")) %>%
+    group_by(name) %>%
+    summarise(mean_dep_delay = mean(dep_delay, na.rm = TRUE),median_dep_delay = median(dep_delay, na.rm = TRUE)) %>%
+    arrange(desc(mean_dep_delay)) %>%
+    print()
+```
+
+```{r} 
+# Generate table for mean and median arrival delay per airport
+flights %>%
+    inner_join(airports, by = c("dest" = "faa")) %>%
+    group_by(name) %>%
+    filter(n() >= 10) %>%
+    summarise(mean_arr_delay = mean(arr_delay, na.rm = TRUE),median_arr_delay = median(arr_delay, na.rm = TRUE)) %>%
+    arrange(desc(mean_arr_delay)) %>%
+    print()
+```
+
+**b. How many flights did the aircraft model with the fastest average speed take? Produce a tibble with 1 row, and entires for the model, average speed (in MPH) and number of flights.**
+
+```{r}
+# Generate table for the aircraft model with the fastest average speed
+flights %>%
+    inner_join(planes, by = c("tailnum")) %>%
+    group_by(model) %>%
+    summarise(avg_speed = mean(speed, na.rm = TRUE), num_flights = n()) %>%
+    filter(num_flights > 0) %>%
+    arrange(desc(avg_speed)) %>%
+    head(1) %>%
+    print()
+```
+
+## Problem 2 - `get_temp()` 
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Load the Chicago NNMAPS data we used in the visualization lectures. Write a function `get_temp()` that allows a user to request the average temperature for a given month. The arguments should be: 
+
+- `month`: Month, either a numeric 1-12 or a string.
+- `year`: A numeric year.
+- `data`: The data set to obtain data from.
+- `celsius`: Logically indicating whether the results should be in celsius. Default `FALSE`.
+- `average_fn`: A function with which to compute the mean. Default is `mean`. 
+
+The output should be a numeric vector of length 1. The code inside the function should, as with the rest of this problem, use `tidyverse`. Be sure to sanitize the input. 
+
+Prove your code works by evaluating the following. Your code should produce the result, or a reasonable error message. 
+
+```{r, eval = FALSE}
+get_temp("Apr", 1999, data = nnmaps)
+get_temp("Apr", 1999, data = nnmaps, celsius = TRUE)
+get_temp(10, 1998, data = nnmaps, average_fn = median)
+get_temp(13, 1998, data = nnmaps)
+get_temp(2, 2005, data = nnmaps)
+get_temp("November", 1999, data =nnmaps, celsius = TRUE,
+        average_fn = function(x) {
+            x %>% sort -> x
+            x[2:(length(x) - 1)] %>% mean %>% return
+        })
+```
+
+```{r} 
+# Load the package and data 
+library(tidyverse)
+nnmaps <- read.csv("./chicago-nmmaps.csv")
+head(nnmaps)
+```
+
+```{r}
+# Define the function
+get_temp <- function(month, 
+                    year, 
+                    data, 
+                    celsius = FALSE, 
+                    average_fn = mean) {
+    # Sanitize the input
+    months_abb <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    months_num <- c(1:12)
+    months_name <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+    if (month %in% months_abb) {
+        month <- match(month, months_abb)
+    } else if (month %in% months_name) {
+        month <- match(month, months_name)
+    }
+    else if (month %in% months_num) {
+        month <- as.numeric(month)
+    } else {
+        cat("Invalid month input", month, ". Should be an integer between 1 and 12 (for example, 1)or a string of month name (for example, January) or abbreviation (for example, Jan). Not case sensitive.\n")
+        return 
+    }
+
+    year <- as.integer(year)
+
+    if (!is.integer(year) || year < 1997 || year > 2000) {
+        cat("Invalid year input", year, ". Should be an integer between 1997 and 2000 (inclusive).\n")
+        return 
+    }
+    if (!is.data.frame(data)) {
+        cat("Invalid data input", data, ". Should be a data frame.\n")
+        return 
+    }
+    if (!is.logical(celsius)) {
+        cat("Input celsius input", celsius, ". Should be a logical value TRUE or FALSE.\n")
+        return 
+    }
+    if (!is.function(average_fn)) {
+        cat("Input average_fn input", average_fn, ". Should be a function.\n")
+        return 
+    }
+    month_tmp <- month
+    year_tmp <- year 
+    # print(month_tmp, year_tmp)
+    # Compute the average temperature
+    data %>%
+        filter(month_numeric == month_tmp & year == year_tmp) %>%
+        summarise(avg_temp = average_fn(temp)) %>%
+        mutate(avg_temp = ifelse(celsius == TRUE, (avg_temp - 32) * 5 / 9, avg_temp)) %>%
+        pull(avg_temp) %>%
+
+    # Return a numeric vector of length 1
+    return
+}
+```
+
+```{r}
+# Demo
+get_temp("Apr", 1999, data = nnmaps)
+get_temp("Apr", 1999, data = nnmaps, celsius = TRUE)
+get_temp(10, 1998, data = nnmaps, average_fn = median)
+get_temp(13, 1998, data = nnmaps)
+get_temp(2, 2005, data = nnmaps)
+get_temp("November", 1999, data =nnmaps, celsius = TRUE,
+        average_fn = function(x) {
+        x %>% sort -> x
+        x[2:(length(x) - 1)] %>% mean %>% return
+        })
+```
+
+
+## Problem 3 - SAS 
