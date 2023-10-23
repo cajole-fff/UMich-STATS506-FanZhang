@@ -182,6 +182,9 @@ get_temp("November", 1999, data =nnmaps, celsius = TRUE,
 
 This problem should be done entirely within SAS. 
 
+The `html` output can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p3_sas_result.html) and the `pdf` output can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p3_sas_result.pdf).
+
+
 Access the RECS 2020 data and download a copy of the data. You may import the CSV or load the `sas7bdat` file directly. (This is **not** the 2009 version we used in lecture). You'll probably also need the "Variable and response cookbook" to identify the proper variables. Load or import data into SAS.
 
 ```{SAS, eval = FALSE}
@@ -252,6 +255,7 @@ RUN;
 PROC SURVEYREG DATA=RECS2020_DOLLAREL_POS;
     WEIGHT NWEIGHT;
     MODEL log_dollarel = totrooms prkgplc1;
+    OUTPUT out=RECS2020_REG_RESULT p=predicted_log_dollarel;
 RUN;
 ```
 
@@ -268,3 +272,22 @@ PROC SGPLOT DATA=RECS2020_REG_RESULT;
     SCATTER x=dollarel y=predicted_dollarel;
 RUN;
 ```
+
+## Problem 4 - Multiple tools
+
+It is not uncommon during an analysis to use multiple statistical tools as each has their own pros and cons. The problem is based on an actual analysis I've done, with a different data set. The data was originally stored in a large SAS database, but the researcher was most familiar with Stata so I carried out the analysis there. During the course of the project, there was a particular analysis that Stata could not do, so I switched over to R. We're going to mimic this workflow here.
+
+We'll use the Survey of Household Economics and Decisionmaking from the Federal Reserve. The data and Codebook documentation can be found at [https://www.federalreserve.gov/consumerscommunities/shed_data.htm](https://www.federalreserve.gov/consumerscommunities/shed_data.htm). Use the 2022 version. 
+
+The researcher's interest is in whether long-term concerns about climate change impact current day concerns about financial stability. To address this, the particular research question of interest is whether **the respondent's family is better off, or worse off financially compared to 12 month's ago** can be predicted by **thinking that the chance of experiencing a natural disaster or severe weather event will be higher, lower or about the same in 5 years**. We also want to control for 
+
+- How they rate the economic conditions today in the country.
+- Whether they own (with or without a mortgage) or rent or neither their home.
+- Education (use the 4-category version)
+- Race (use the 5-category version)
+
+We're going to pretend the raw data is extremely large that wee need to extract the subset of the data we're going to use before we can open it in Stata or R. 
+
+Additionally, the data comes from a complex survey design, so we need to account for that in the analysis. 
+
+**a. Take a look at the Codebook. For very minor extra credit, how was the Codebook generated? (No loss of points if you skip this.**
