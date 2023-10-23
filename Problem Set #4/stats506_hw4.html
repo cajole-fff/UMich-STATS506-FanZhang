@@ -3163,10 +3163,10 @@ vertical-align: -.125em;
 <span id="cb9-4"><a href="#cb9-4"></a><span class="fu">get_temp</span>(<span class="dv">13</span>, <span class="dv">1998</span>, <span class="at">data =</span> nnmaps)</span>
 <span id="cb9-5"><a href="#cb9-5"></a><span class="fu">get_temp</span>(<span class="dv">2</span>, <span class="dv">2005</span>, <span class="at">data =</span> nnmaps)</span>
 <span id="cb9-6"><a href="#cb9-6"></a><span class="fu">get_temp</span>(<span class="st">&quot;November&quot;</span>, <span class="dv">1999</span>, <span class="at">data =</span>nnmaps, <span class="at">celsius =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-7"><a href="#cb9-7"></a>         <span class="at">average_fn =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb9-8"><a href="#cb9-8"></a>           x <span class="sc">%&gt;%</span> sort <span class="ot">-&gt;</span> x</span>
-<span id="cb9-9"><a href="#cb9-9"></a>           x[<span class="dv">2</span><span class="sc">:</span>(<span class="fu">length</span>(x) <span class="sc">-</span> <span class="dv">1</span>)] <span class="sc">%&gt;%</span> mean <span class="sc">%&gt;%</span> return</span>
-<span id="cb9-10"><a href="#cb9-10"></a>         })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-7"><a href="#cb9-7"></a>        <span class="at">average_fn =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb9-8"><a href="#cb9-8"></a>            x <span class="sc">%&gt;%</span> sort <span class="ot">-&gt;</span> x</span>
+<span id="cb9-9"><a href="#cb9-9"></a>            x[<span class="dv">2</span><span class="sc">:</span>(<span class="fu">length</span>(x) <span class="sc">-</span> <span class="dv">1</span>)] <span class="sc">%&gt;%</span> mean <span class="sc">%&gt;%</span> return</span>
+<span id="cb9-10"><a href="#cb9-10"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Load the package and data </span></span>
@@ -3193,14 +3193,14 @@ vertical-align: -.125em;
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Define the function</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>get_temp <span class="ot">&lt;-</span> <span class="cf">function</span>(month, </span>
-<span id="cb12-3"><a href="#cb12-3"></a>                     year, </span>
-<span id="cb12-4"><a href="#cb12-4"></a>                     data, </span>
-<span id="cb12-5"><a href="#cb12-5"></a>                     <span class="at">celsius =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb12-6"><a href="#cb12-6"></a>                     <span class="at">average_fn =</span> mean) {</span>
+<span id="cb12-3"><a href="#cb12-3"></a>                    year, </span>
+<span id="cb12-4"><a href="#cb12-4"></a>                    data, </span>
+<span id="cb12-5"><a href="#cb12-5"></a>                    <span class="at">celsius =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb12-6"><a href="#cb12-6"></a>                    <span class="at">average_fn =</span> mean) {</span>
 <span id="cb12-7"><a href="#cb12-7"></a>    <span class="co"># Sanitize the input</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a>    months_abb <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Jan&quot;</span>, <span class="st">&quot;Feb&quot;</span>, <span class="st">&quot;Mar&quot;</span>, <span class="st">&quot;Apr&quot;</span>, <span class="st">&quot;May&quot;</span>, <span class="st">&quot;Jun&quot;</span>, <span class="st">&quot;Jul&quot;</span>, <span class="st">&quot;Aug&quot;</span>, <span class="st">&quot;Sep&quot;</span>, <span class="st">&quot;Oct&quot;</span>, <span class="st">&quot;Nov&quot;</span>, <span class="st">&quot;Dec&quot;</span>)</span>
-<span id="cb12-9"><a href="#cb12-9"></a>    months_num <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
-<span id="cb12-10"><a href="#cb12-10"></a>    months_name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;January&quot;</span>, <span class="st">&quot;February&quot;</span>, <span class="st">&quot;March&quot;</span>, <span class="st">&quot;April&quot;</span>, <span class="st">&quot;May&quot;</span>, <span class="st">&quot;June&quot;</span>, <span class="st">&quot;July&quot;</span>, <span class="st">&quot;August&quot;</span>, <span class="st">&quot;September&quot;</span>, <span class="st">&quot;October&quot;</span>, <span class="st">&quot;November&quot;</span>, <span class="st">&quot;December&quot;</span>)</span>
+<span id="cb12-9"><a href="#cb12-9"></a>    months_name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;January&quot;</span>, <span class="st">&quot;February&quot;</span>, <span class="st">&quot;March&quot;</span>, <span class="st">&quot;April&quot;</span>, <span class="st">&quot;May&quot;</span>, <span class="st">&quot;June&quot;</span>, <span class="st">&quot;July&quot;</span>, <span class="st">&quot;August&quot;</span>, <span class="st">&quot;September&quot;</span>, <span class="st">&quot;October&quot;</span>, <span class="st">&quot;November&quot;</span>, <span class="st">&quot;December&quot;</span>)</span>
+<span id="cb12-10"><a href="#cb12-10"></a>    months_num <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
 <span id="cb12-11"><a href="#cb12-11"></a></span>
 <span id="cb12-12"><a href="#cb12-12"></a>    <span class="cf">if</span> (month <span class="sc">%in%</span> months_abb) {</span>
 <span id="cb12-13"><a href="#cb12-13"></a>        month <span class="ot">&lt;-</span> <span class="fu">match</span>(month, months_abb)</span>
@@ -3210,41 +3210,42 @@ vertical-align: -.125em;
 <span id="cb12-17"><a href="#cb12-17"></a>    <span class="cf">else</span> <span class="cf">if</span> (month <span class="sc">%in%</span> months_num) {</span>
 <span id="cb12-18"><a href="#cb12-18"></a>        month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(month)</span>
 <span id="cb12-19"><a href="#cb12-19"></a>    } <span class="cf">else</span> {</span>
-<span id="cb12-20"><a href="#cb12-20"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid month input&quot;</span>, month, <span class="st">&quot;. Should be an integer between 1 and 12 (for example, 1)or a string of month name (for example, January) or abbreviation (for example, Jan). Not case sensitive.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-20"><a href="#cb12-20"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid month input&quot;</span>, month, <span class="st">&quot;. Should be an integer between 1 and 12 (e.g. 1) or a string of month name (e.g. January) or abbreviation (e.g. Jan). Not case sensitive.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb12-21"><a href="#cb12-21"></a>        return </span>
 <span id="cb12-22"><a href="#cb12-22"></a>    }</span>
 <span id="cb12-23"><a href="#cb12-23"></a></span>
 <span id="cb12-24"><a href="#cb12-24"></a>    year <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(year)</span>
-<span id="cb12-25"><a href="#cb12-25"></a></span>
-<span id="cb12-26"><a href="#cb12-26"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.integer</span>(year) <span class="sc">||</span> year <span class="sc">&lt;</span> <span class="dv">1997</span> <span class="sc">||</span> year <span class="sc">&gt;</span> <span class="dv">2000</span>) {</span>
-<span id="cb12-27"><a href="#cb12-27"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid year input&quot;</span>, year, <span class="st">&quot;. Should be an integer between 1997 and 2000 (inclusive).</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb12-28"><a href="#cb12-28"></a>        return </span>
-<span id="cb12-29"><a href="#cb12-29"></a>    }</span>
-<span id="cb12-30"><a href="#cb12-30"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.data.frame</span>(data)) {</span>
-<span id="cb12-31"><a href="#cb12-31"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid data input&quot;</span>, data, <span class="st">&quot;. Should be a data frame.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb12-32"><a href="#cb12-32"></a>        return </span>
-<span id="cb12-33"><a href="#cb12-33"></a>    }</span>
-<span id="cb12-34"><a href="#cb12-34"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.logical</span>(celsius)) {</span>
-<span id="cb12-35"><a href="#cb12-35"></a>        <span class="fu">cat</span>(<span class="st">&quot;Input celsius input&quot;</span>, celsius, <span class="st">&quot;. Should be a logical value TRUE or FALSE.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb12-36"><a href="#cb12-36"></a>        return </span>
-<span id="cb12-37"><a href="#cb12-37"></a>    }</span>
-<span id="cb12-38"><a href="#cb12-38"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.function</span>(average_fn)) {</span>
-<span id="cb12-39"><a href="#cb12-39"></a>        <span class="fu">cat</span>(<span class="st">&quot;Input average_fn input&quot;</span>, average_fn, <span class="st">&quot;. Should be a function.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb12-40"><a href="#cb12-40"></a>        return </span>
-<span id="cb12-41"><a href="#cb12-41"></a>    }</span>
-<span id="cb12-42"><a href="#cb12-42"></a>    month_tmp <span class="ot">&lt;-</span> month</span>
-<span id="cb12-43"><a href="#cb12-43"></a>    year_tmp <span class="ot">&lt;-</span> year </span>
-<span id="cb12-44"><a href="#cb12-44"></a>    <span class="co"># print(month_tmp, year_tmp)</span></span>
-<span id="cb12-45"><a href="#cb12-45"></a>    <span class="co"># Compute the average temperature</span></span>
-<span id="cb12-46"><a href="#cb12-46"></a>    data <span class="sc">%&gt;%</span></span>
-<span id="cb12-47"><a href="#cb12-47"></a>        <span class="fu">filter</span>(month_numeric <span class="sc">==</span> month_tmp <span class="sc">&amp;</span> year <span class="sc">==</span> year_tmp) <span class="sc">%&gt;%</span></span>
-<span id="cb12-48"><a href="#cb12-48"></a>        <span class="fu">summarise</span>(<span class="at">avg_temp =</span> <span class="fu">average_fn</span>(temp)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-49"><a href="#cb12-49"></a>        <span class="fu">mutate</span>(<span class="at">avg_temp =</span> <span class="fu">ifelse</span>(celsius <span class="sc">==</span> <span class="cn">TRUE</span>, (avg_temp <span class="sc">-</span> <span class="dv">32</span>) <span class="sc">*</span> <span class="dv">5</span> <span class="sc">/</span> <span class="dv">9</span>, avg_temp)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-50"><a href="#cb12-50"></a>        <span class="fu">pull</span>(avg_temp) <span class="sc">%&gt;%</span></span>
-<span id="cb12-51"><a href="#cb12-51"></a></span>
-<span id="cb12-52"><a href="#cb12-52"></a>    <span class="co"># Return a numeric vector of length 1</span></span>
-<span id="cb12-53"><a href="#cb12-53"></a>    return</span>
-<span id="cb12-54"><a href="#cb12-54"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-25"><a href="#cb12-25"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.integer</span>(year) <span class="sc">||</span> year <span class="sc">&lt;</span> <span class="dv">1997</span> <span class="sc">||</span> year <span class="sc">&gt;</span> <span class="dv">2000</span>) {</span>
+<span id="cb12-26"><a href="#cb12-26"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid year input&quot;</span>, year, <span class="st">&quot;. Should be an integer between 1997 and 2000 (inclusive).</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-27"><a href="#cb12-27"></a>        return </span>
+<span id="cb12-28"><a href="#cb12-28"></a>    }</span>
+<span id="cb12-29"><a href="#cb12-29"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.data.frame</span>(data)) {</span>
+<span id="cb12-30"><a href="#cb12-30"></a>        <span class="fu">cat</span>(<span class="st">&quot;Invalid data input&quot;</span>, data, <span class="st">&quot;. Should be a data frame.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-31"><a href="#cb12-31"></a>        return </span>
+<span id="cb12-32"><a href="#cb12-32"></a>    }</span>
+<span id="cb12-33"><a href="#cb12-33"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.logical</span>(celsius)) {</span>
+<span id="cb12-34"><a href="#cb12-34"></a>        <span class="fu">cat</span>(<span class="st">&quot;Input celsius input&quot;</span>, celsius, <span class="st">&quot;. Should be a logical value TRUE or FALSE.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-35"><a href="#cb12-35"></a>        return </span>
+<span id="cb12-36"><a href="#cb12-36"></a>    }</span>
+<span id="cb12-37"><a href="#cb12-37"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.function</span>(average_fn)) {</span>
+<span id="cb12-38"><a href="#cb12-38"></a>        <span class="fu">cat</span>(<span class="st">&quot;Input average_fn input&quot;</span>, average_fn, <span class="st">&quot;. Should be a function.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-39"><a href="#cb12-39"></a>        return </span>
+<span id="cb12-40"><a href="#cb12-40"></a>    }</span>
+<span id="cb12-41"><a href="#cb12-41"></a></span>
+<span id="cb12-42"><a href="#cb12-42"></a>    <span class="co"># To avoid name conflict, assign the input to temporary variables</span></span>
+<span id="cb12-43"><a href="#cb12-43"></a>    month_tmp <span class="ot">&lt;-</span> month</span>
+<span id="cb12-44"><a href="#cb12-44"></a>    year_tmp <span class="ot">&lt;-</span> year </span>
+<span id="cb12-45"><a href="#cb12-45"></a>    </span>
+<span id="cb12-46"><a href="#cb12-46"></a>    <span class="co"># Compute the average temperature</span></span>
+<span id="cb12-47"><a href="#cb12-47"></a>    data <span class="sc">%&gt;%</span></span>
+<span id="cb12-48"><a href="#cb12-48"></a>        <span class="fu">filter</span>(month_numeric <span class="sc">==</span> month_tmp <span class="sc">&amp;</span> year <span class="sc">==</span> year_tmp) <span class="sc">%&gt;%</span></span>
+<span id="cb12-49"><a href="#cb12-49"></a>        <span class="fu">summarise</span>(<span class="at">avg_temp =</span> <span class="fu">average_fn</span>(temp)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-50"><a href="#cb12-50"></a>        <span class="fu">mutate</span>(<span class="at">avg_temp =</span> <span class="fu">ifelse</span>(celsius <span class="sc">==</span> <span class="cn">TRUE</span>, (avg_temp <span class="sc">-</span> <span class="dv">32</span>) <span class="sc">*</span> <span class="dv">5</span> <span class="sc">/</span> <span class="dv">9</span>, avg_temp)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-51"><a href="#cb12-51"></a>        <span class="fu">pull</span>(avg_temp) <span class="sc">%&gt;%</span></span>
+<span id="cb12-52"><a href="#cb12-52"></a></span>
+<span id="cb12-53"><a href="#cb12-53"></a>    <span class="co"># Return a numeric vector of length 1</span></span>
+<span id="cb12-54"><a href="#cb12-54"></a>    return</span>
+<span id="cb12-55"><a href="#cb12-55"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Demo</span></span>
@@ -3262,7 +3263,7 @@ vertical-align: -.125em;
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">get_temp</span>(<span class="dv">13</span>, <span class="dv">1998</span>, <span class="at">data =</span> nnmaps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Invalid month input 13 . Should be an integer between 1 and 12 (for example, 1)or a string of month name (for example, January) or abbreviation (for example, Jan). Not case sensitive.</code></pre>
+<pre><code>Invalid month input 13 . Should be an integer between 1 and 12 (e.g. 1) or a string of month name (e.g. January) or abbreviation (e.g. Jan). Not case sensitive.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] NaN</code></pre>
@@ -3275,10 +3276,10 @@ vertical-align: -.125em;
 <pre><code>[1] NaN</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">get_temp</span>(<span class="st">&quot;November&quot;</span>, <span class="dv">1999</span>, <span class="at">data =</span>nnmaps, <span class="at">celsius =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb25-2"><a href="#cb25-2"></a>         <span class="at">average_fn =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb25-3"><a href="#cb25-3"></a>           x <span class="sc">%&gt;%</span> sort <span class="ot">-&gt;</span> x</span>
-<span id="cb25-4"><a href="#cb25-4"></a>           x[<span class="dv">2</span><span class="sc">:</span>(<span class="fu">length</span>(x) <span class="sc">-</span> <span class="dv">1</span>)] <span class="sc">%&gt;%</span> mean <span class="sc">%&gt;%</span> return</span>
-<span id="cb25-5"><a href="#cb25-5"></a>         })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-2"><a href="#cb25-2"></a>        <span class="at">average_fn =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb25-3"><a href="#cb25-3"></a>        x <span class="sc">%&gt;%</span> sort <span class="ot">-&gt;</span> x</span>
+<span id="cb25-4"><a href="#cb25-4"></a>        x[<span class="dv">2</span><span class="sc">:</span>(<span class="fu">length</span>(x) <span class="sc">-</span> <span class="dv">1</span>)] <span class="sc">%&gt;%</span> mean <span class="sc">%&gt;%</span> return</span>
+<span id="cb25-5"><a href="#cb25-5"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7.301587</code></pre>
 </div>
@@ -3286,6 +3287,81 @@ vertical-align: -.125em;
 </section>
 <section id="problem-3---sas" class="level2">
 <h2 class="anchored" data-anchor-id="problem-3---sas">Problem 3 - SAS</h2>
+<p>This problem should be done entirely within SAS.</p>
+<p>Access the RECS 2020 data and download a copy of the data. You may import the CSV or load the <code>sas7bdat</code> file directly. (This is <strong>not</strong> the 2009 version we used in lecture). You’ll probably also need the “Variable and response cookbook” to identify the proper variables. Load or import data into SAS.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb27-1"><a href="#cb27-1"></a>/* Load the Data */</span>
+<span id="cb27-2"><a href="#cb27-2"></a>DATA RECS2020;</span>
+<span id="cb27-3"><a href="#cb27-3"></a>    SET &#39;/home/u63648565/recs2020_public_v5.sas7bdat&#39;;</span>
+<span id="cb27-4"><a href="#cb27-4"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>a. What state has the highest percentage of records? What percentage of all records correspond to Michigan? (Don’t forget to account for the sampling weights!)</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb28-1"><a href="#cb28-1"></a>/* Calculate the percentage of records in each state, order by frequency */</span>
+<span id="cb28-2"><a href="#cb28-2"></a>PROC SURVEYFREQ DATA=RECS2020 ORDER=FREQ ;</span>
+<span id="cb28-3"><a href="#cb28-3"></a>    WEIGHT NWEIGHT;</span>
+<span id="cb28-4"><a href="#cb28-4"></a>    TABLES state_name;</span>
+<span id="cb28-5"><a href="#cb28-5"></a>    ODS OUTPUT OneWay=RECS2020FREQ;</span>
+<span id="cb28-6"><a href="#cb28-6"></a>RUN;</span>
+<span id="cb28-7"><a href="#cb28-7"></a></span>
+<span id="cb28-8"><a href="#cb28-8"></a>/* Print the state with the hightest percentage of records */</span>
+<span id="cb28-9"><a href="#cb28-9"></a>PROC PRINT DATA=RECS2020FREQ (OBS=1);</span>
+<span id="cb28-10"><a href="#cb28-10"></a>RUN;</span>
+<span id="cb28-11"><a href="#cb28-11"></a></span>
+<span id="cb28-12"><a href="#cb28-12"></a>/* Print the percentage of all records correspond to Michigan */</span>
+<span id="cb28-13"><a href="#cb28-13"></a>PROC PRINT DATA=RECS2020FREQ;</span>
+<span id="cb28-14"><a href="#cb28-14"></a>    WHERE state_name=&#39;Michigan&#39;;</span>
+<span id="cb28-15"><a href="#cb28-15"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>According to the result, the state with the highest percentage of records is <em>California</em>.</p>
+<p><strong>b. Generate a histogram of the total electricity cost in dollars, amongst those with a strictly positive cost.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb29-1"><a href="#cb29-1"></a>/* Filter data with strictly positive cost */</span>
+<span id="cb29-2"><a href="#cb29-2"></a>DATA RECS2020_DOLLAREL_POS;</span>
+<span id="cb29-3"><a href="#cb29-3"></a>    SET RECS2020;</span>
+<span id="cb29-4"><a href="#cb29-4"></a>    IF dollarel &gt; 0;</span>
+<span id="cb29-5"><a href="#cb29-5"></a>RUN;</span>
+<span id="cb29-6"><a href="#cb29-6"></a></span>
+<span id="cb29-7"><a href="#cb29-7"></a>/* Generate a histogram of the total electricity cost in dollars */</span>
+<span id="cb29-8"><a href="#cb29-8"></a>PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;</span>
+<span id="cb29-9"><a href="#cb29-9"></a>    VAR dollarel;</span>
+<span id="cb29-10"><a href="#cb29-10"></a>    HISTOGRAM;</span>
+<span id="cb29-11"><a href="#cb29-11"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>c. Generate a histogram of the log of the total electricity cost.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb30-1"><a href="#cb30-1"></a>DATA RECS2020_DOLLAREL_POS;</span>
+<span id="cb30-2"><a href="#cb30-2"></a>    SET RECS2020_DOLLAREL_POS;</span>
+<span id="cb30-3"><a href="#cb30-3"></a>    IF dollarel &gt; 0;</span>
+<span id="cb30-4"><a href="#cb30-4"></a>    log_dollarel = log(dollarel);</span>
+<span id="cb30-5"><a href="#cb30-5"></a>RUN;</span>
+<span id="cb30-6"><a href="#cb30-6"></a></span>
+<span id="cb30-7"><a href="#cb30-7"></a>/* Generate a histogram of the log of the total electricity cost */</span>
+<span id="cb30-8"><a href="#cb30-8"></a>PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;</span>
+<span id="cb30-9"><a href="#cb30-9"></a>    VAR log_dollarel;</span>
+<span id="cb30-10"><a href="#cb30-10"></a>    HISTOGRAM;</span>
+<span id="cb30-11"><a href="#cb30-11"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>d. Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage. (Don’t forget weights.)</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb31-1"><a href="#cb31-1"></a>/* Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage */</span>
+<span id="cb31-2"><a href="#cb31-2"></a>PROC SURVEYREG DATA=RECS2020_DOLLAREL_POS;</span>
+<span id="cb31-3"><a href="#cb31-3"></a>    WEIGHT NWEIGHT;</span>
+<span id="cb31-4"><a href="#cb31-4"></a>    MODEL log_dollarel = totrooms prkgplc1;</span>
+<span id="cb31-5"><a href="#cb31-5"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>e. Use that model to generate predicted values and create a scatterplot of predicted total electricity cost vs actual total electricity cost (not on the log scale).</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource sas number-lines code-with-copy"><code class="sourceCode"><span id="cb32-1"><a href="#cb32-1"></a>/* Generate predicted values of dollarel */</span>
+<span id="cb32-2"><a href="#cb32-2"></a>DATA RECS2020_REG_RESULT;</span>
+<span id="cb32-3"><a href="#cb32-3"></a>    SET RECS2020_REG_RESULT;</span>
+<span id="cb32-4"><a href="#cb32-4"></a>    predicted_dollarel = exp(predicted_log_dollarel);</span>
+<span id="cb32-5"><a href="#cb32-5"></a>RUN;</span>
+<span id="cb32-6"><a href="#cb32-6"></a></span>
+<span id="cb32-7"><a href="#cb32-7"></a>PROC SGPLOT DATA=RECS2020_REG_RESULT;</span>
+<span id="cb32-8"><a href="#cb32-8"></a>    SCATTER x=dollarel y=predicted_dollarel;</span>
+<span id="cb32-9"><a href="#cb32-9"></a>RUN;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 
 </main>

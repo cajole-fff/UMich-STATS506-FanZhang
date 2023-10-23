@@ -92,10 +92,10 @@ get_temp(10, 1998, data = nnmaps, average_fn = median)
 get_temp(13, 1998, data = nnmaps)
 get_temp(2, 2005, data = nnmaps)
 get_temp("November", 1999, data =nnmaps, celsius = TRUE,
-         average_fn = function(x) {
-           x %>% sort -> x
-           x[2:(length(x) - 1)] %>% mean %>% return
-         })
+        average_fn = function(x) {
+            x %>% sort -> x
+            x[2:(length(x) - 1)] %>% mean %>% return
+        })
 ```
 
 ```{r} 
@@ -108,16 +108,15 @@ head(nnmaps)
 ```{r}
 # Define the function
 get_temp <- function(month, 
-                     year, 
-                     data, 
-                     celsius = FALSE, 
-                     average_fn = mean) {
+                    year, 
+                    data, 
+                    celsius = FALSE, 
+                    average_fn = mean) {
     # Sanitize the input
-    months_abb <- c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+    months_abb <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    months_name <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
     months_num <- c(1:12)
-    months_name <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novermber", "December")
 
-    month <- toupper(month)
     if (month %in% months_abb) {
         month <- match(month, months_abb)
     } else if (month %in% months_name) {
@@ -126,12 +125,11 @@ get_temp <- function(month,
     else if (month %in% months_num) {
         month <- as.numeric(month)
     } else {
-        cat("Invalid month input", month, ". Should be an integer between 1 and 12 (for example, 1)or a string of month name (for example, January) or abbreviation (for example, Jan). Not case sensitive.\n")
+        cat("Invalid month input", month, ". Should be an integer between 1 and 12 (e.g. 1) or a string of month name (e.g. January) or abbreviation (e.g. Jan). Not case sensitive.\n")
         return 
     }
 
     year <- as.integer(year)
-
     if (!is.integer(year) || year < 1997 || year > 2000) {
         cat("Invalid year input", year, ". Should be an integer between 1997 and 2000 (inclusive).\n")
         return 
@@ -148,8 +146,11 @@ get_temp <- function(month,
         cat("Input average_fn input", average_fn, ". Should be a function.\n")
         return 
     }
+
+    # To avoid name conflict, assign the input to temporary variables
     month_tmp <- month
     year_tmp <- year 
+    
     # Compute the average temperature
     data %>%
         filter(month_numeric == month_tmp & year == year_tmp) %>%
@@ -169,12 +170,97 @@ get_temp("Apr", 1999, data = nnmaps, celsius = TRUE)
 get_temp(10, 1998, data = nnmaps, average_fn = median)
 get_temp(13, 1998, data = nnmaps)
 get_temp(2, 2005, data = nnmaps)
-# get_temp("November", 1999, data =nnmaps, celsius = TRUE,
-#          average_fn = function(x) {
-#            x %>% sort -> x
-#            x[2:(length(x) - 1)] %>% mean %>% return
-#          })
+get_temp("November", 1999, data =nnmaps, celsius = TRUE,
+        average_fn = function(x) {
+        x %>% sort -> x
+        x[2:(length(x) - 1)] %>% mean %>% return
+        })
 ```
 
 
 ## Problem 3 - SAS 
+
+This problem should be done entirely within SAS. 
+
+Access the RECS 2020 data and download a copy of the data. You may import the CSV or load the `sas7bdat` file directly. (This is **not** the 2009 version we used in lecture). You'll probably also need the "Variable and response cookbook" to identify the proper variables. Load or import data into SAS.
+
+```{SAS, eval = FALSE}
+/* Load the Data */
+DATA RECS2020;
+    SET '/home/u63648565/recs2020_public_v5.sas7bdat';
+RUN;
+```
+
+**a. What state has the highest percentage of records? What percentage of all records correspond to Michigan? (Don't forget to account for the sampling weights!)**
+
+```{SAS, eval = FALSE}
+/* Calculate the percentage of records in each state, order by frequency */
+PROC SURVEYFREQ DATA=RECS2020 ORDER=FREQ ;
+    WEIGHT NWEIGHT;
+    TABLES state_name;
+    ODS OUTPUT OneWay=RECS2020FREQ;
+RUN;
+
+/* Print the state with the hightest percentage of records */
+PROC PRINT DATA=RECS2020FREQ (OBS=1);
+RUN;
+
+/* Print the percentage of all records correspond to Michigan */
+PROC PRINT DATA=RECS2020FREQ;
+    WHERE state_name='Michigan';
+RUN;
+```
+
+According to the result, the state with the highest percentage of records is *California*. 
+
+**b. Generate a histogram of the total electricity cost in dollars, amongst those with a strictly positive cost.**
+
+```{SAS, eval = FALSE}
+/* Filter data with strictly positive cost */
+DATA RECS2020_DOLLAREL_POS;
+    SET RECS2020;
+    IF dollarel > 0;
+RUN;
+
+/* Generate a histogram of the total electricity cost in dollars */
+PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;
+    VAR dollarel;
+    HISTOGRAM;
+RUN;
+```
+
+**c. Generate a histogram of the log of the total electricity cost.**
+
+```{SAS, eval = FALSE}
+DATA RECS2020_DOLLAREL_POS;
+	SET RECS2020_DOLLAREL_POS;
+	IF dollarel > 0;
+	log_dollarel = log(dollarel);
+RUN;
+
+/* Generate a histogram of the log of the total electricity cost */
+PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;
+    VAR log_dollarel;
+    HISTOGRAM;
+RUN;
+```
+
+**d. Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage. (Don't forget weights.)**
+
+```{SAS, eval = FALSE}
+/* Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage */
+PROC SURVEYREG DATA=RECS2020_DOLLAREL_POS;
+    WEIGHT NWEIGHT;
+    MODEL log_dollarel = totrooms prkgplc1;
+RUN;
+```
+
+**e. Use that model to generate predicted values and create a scatterplot of predicted total electricity cost vs actual total electricity cost (not on the log scale).**
+
+```{SAS, eval = FALSE}
+/* Generate predicted values */
+PROC SURVEYREG DATA=RECS2020_DOLLAREL_POS PREDICTED;
+    WEIGHT NWEIGHT;
+    MODEL log_dollarel = totrooms prkgplc1;
+    OUTPUT OUT=RECS2020_DOLLAREL_POS_PRED PREDICTED=Predicted;
+RUN;
