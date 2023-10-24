@@ -98,6 +98,7 @@ get_temp("November", 1999, data =nnmaps, celsius = TRUE,
         })
 ```
 
+Here is the implementation:
 ```{r} 
 # Load the package and data 
 library(tidyverse)
@@ -345,6 +346,8 @@ RUN;
 
 ### Stata
 
+The `.Do` file can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p4.Do).
+
 **d. Demonstrate that you've successfully extracted the appropriate data by showing the number of observations and variables. (Report these values via Stata code don't just say "As we see in the Properties window". The Codebook should give you a way to ensure the number of rows is as expected.)**
 
 ```{stata, eval = FALSE}
@@ -355,7 +358,7 @@ RUN;
 
 Contains data from ./data/public2022/public2022_use.dta
  Observations:        11,667                  
-    Variables:             7                  
+    Variables:             8                  
 --------------------------------------------------------------------------------
 Variable      Storage   Display    Value
     name         type    format    label      Variable label
@@ -374,6 +377,9 @@ GH1             double  %12.0g                This section will ask some
                                                 your car. Do you:
 ppeducat        double  %12.0g                Education (4 Categories)
 ppethm          double  %12.0g                Race / Ethnicity
+weight_pop      double  %12.0g                Post-stratification weight - Main
+                                                qualified respondents scaled to
+                                                U.S. populatio
 --------------------------------------------------------------------------------
 Sorted by: 
 
@@ -387,7 +393,6 @@ As shown in the code book, there should be totally 11,667 observations, and it i
 **e. The response variable is a Likert scale; convert it to a binary of worse off versus same/better.**
 
 ```{stata, eval = FALSE}
-
 . tabulate B3
 
 Compared to |
@@ -414,6 +419,7 @@ family) are |
 . replace B3 = 1 if B3 >= 3
 (7,371 real changes made)
 
+. 
 . tabulate B3
 
 Compared to |

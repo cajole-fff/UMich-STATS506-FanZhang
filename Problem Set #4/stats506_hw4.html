@@ -3278,6 +3278,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb9-9"><a href="#cb9-9"></a>            x[<span class="dv">2</span><span class="sc">:</span>(<span class="fu">length</span>(x) <span class="sc">-</span> <span class="dv">1</span>)] <span class="sc">%&gt;%</span> mean <span class="sc">%&gt;%</span> return</span>
 <span id="cb9-10"><a href="#cb9-10"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Here is the implementation:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Load the package and data </span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="fu">library</span>(tidyverse)</span>
@@ -3537,6 +3538,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 </section>
 <section id="stata" class="level3">
 <h3 class="anchored" data-anchor-id="stata">Stata</h3>
+<p>The <code>.Do</code> file can be found <a href="https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p4.Do">here</a>.</p>
 <p><strong>d. Demonstrate that you’ve successfully extracted the appropriate data by showing the number of observations and variables. (Report these values via Stata code don’t just say “As we see in the Properties window”. The Codebook should give you a way to ensure the number of rows is as expected.)</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb36-1"><a href="#cb36-1"></a>. <span class="kw">use</span> <span class="st">&quot;./data/public2022/public2022_use.dta&quot;</span>, <span class="kw">clear</span></span>
@@ -3546,7 +3548,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb36-5"><a href="#cb36-5"></a></span>
 <span id="cb36-6"><a href="#cb36-6"></a>Contains <span class="kw">data</span> from ./<span class="kw">data</span>/public2022/public2022_use.dta</span>
 <span id="cb36-7"><a href="#cb36-7"></a> Observations:        11,667                  </span>
-<span id="cb36-8"><a href="#cb36-8"></a>    Variables:             7                  </span>
+<span id="cb36-8"><a href="#cb36-8"></a>    Variables:             8                  </span>
 <span id="cb36-9"><a href="#cb36-9"></a>--------------------------------------------------------------------------------</span>
 <span id="cb36-10"><a href="#cb36-10"></a>Variable      Storage   Display    Value</span>
 <span id="cb36-11"><a href="#cb36-11"></a>    <span class="bn">name</span>         <span class="dv">type</span>    <span class="kw">format</span>    <span class="kw">label</span>      Variable <span class="kw">label</span></span>
@@ -3565,43 +3567,46 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb36-24"><a href="#cb36-24"></a>                                                your car. Do you:</span>
 <span id="cb36-25"><a href="#cb36-25"></a>ppeducat        <span class="kw">double</span>  %12.0g                Education (4 Categories)</span>
 <span id="cb36-26"><a href="#cb36-26"></a>ppethm          <span class="kw">double</span>  %12.0g                Race / Ethnicity</span>
-<span id="cb36-27"><a href="#cb36-27"></a>--------------------------------------------------------------------------------</span>
-<span id="cb36-28"><a href="#cb36-28"></a>Sorted <span class="kw">by</span>: </span>
-<span id="cb36-29"><a href="#cb36-29"></a></span>
-<span id="cb36-30"><a href="#cb36-30"></a>. </span>
-<span id="cb36-31"><a href="#cb36-31"></a>. <span class="kw">display</span> _N</span>
-<span id="cb36-32"><a href="#cb36-32"></a>11667</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb36-27"><a href="#cb36-27"></a>weight_pop      <span class="kw">double</span>  %12.0g                Post-stratification <span class="kw">weight</span> - Main</span>
+<span id="cb36-28"><a href="#cb36-28"></a>                                                qualified respondents scaled to</span>
+<span id="cb36-29"><a href="#cb36-29"></a>                                                U.S. populatio</span>
+<span id="cb36-30"><a href="#cb36-30"></a>--------------------------------------------------------------------------------</span>
+<span id="cb36-31"><a href="#cb36-31"></a>Sorted <span class="kw">by</span>: </span>
+<span id="cb36-32"><a href="#cb36-32"></a></span>
+<span id="cb36-33"><a href="#cb36-33"></a>. </span>
+<span id="cb36-34"><a href="#cb36-34"></a>. <span class="kw">display</span> _N</span>
+<span id="cb36-35"><a href="#cb36-35"></a>11667</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>As shown in the code book, there should be totally 11,667 observations, and it is verified in the output of Stata. Furthermore, the description shows all of the variables in need.</p>
 <p><strong>e. The response variable is a Likert scale; convert it to a binary of worse off versus same/better.</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb37-1"><a href="#cb37-1"></a></span>
-<span id="cb37-2"><a href="#cb37-2"></a>. <span class="kw">tabulate</span> B3</span>
-<span id="cb37-3"><a href="#cb37-3"></a></span>
-<span id="cb37-4"><a href="#cb37-4"></a>Compared to |</span>
-<span id="cb37-5"><a href="#cb37-5"></a>  12 months |</span>
-<span id="cb37-6"><a href="#cb37-6"></a> ago, would |</span>
-<span id="cb37-7"><a href="#cb37-7"></a>    you say |</span>
-<span id="cb37-8"><a href="#cb37-8"></a>   that you |</span>
-<span id="cb37-9"><a href="#cb37-9"></a>  (and your |</span>
-<span id="cb37-10"><a href="#cb37-10"></a><span class="kw">family</span>) are |</span>
-<span id="cb37-11"><a href="#cb37-11"></a>   better o |      Freq.     Percent        Cum.</span>
-<span id="cb37-12"><a href="#cb37-12"></a>------------+-----------------------------------</span>
-<span id="cb37-13"><a href="#cb37-13"></a>          1 |      1,020        8.74        8.74</span>
-<span id="cb37-14"><a href="#cb37-14"></a>          2 |      3,276       28.08       36.82</span>
-<span id="cb37-15"><a href="#cb37-15"></a>          3 |      5,287       45.32       82.14</span>
-<span id="cb37-16"><a href="#cb37-16"></a>          4 |      1,605       13.76       95.89</span>
-<span id="cb37-17"><a href="#cb37-17"></a>          5 |        479        4.11      100.00</span>
-<span id="cb37-18"><a href="#cb37-18"></a>------------+-----------------------------------</span>
-<span id="cb37-19"><a href="#cb37-19"></a>      Total |     11,667      100.00</span>
-<span id="cb37-20"><a href="#cb37-20"></a></span>
-<span id="cb37-21"><a href="#cb37-21"></a>. </span>
-<span id="cb37-22"><a href="#cb37-22"></a>. <span class="kw">replace</span> B3 = 0 <span class="kw">if</span> B3 &lt; 3 </span>
-<span id="cb37-23"><a href="#cb37-23"></a>(4,296 <span class="fu">real</span> changes made)</span>
-<span id="cb37-24"><a href="#cb37-24"></a></span>
-<span id="cb37-25"><a href="#cb37-25"></a>. <span class="kw">replace</span> B3 = 1 <span class="kw">if</span> B3 &gt;= 3</span>
-<span id="cb37-26"><a href="#cb37-26"></a>(7,371 <span class="fu">real</span> changes made)</span>
-<span id="cb37-27"><a href="#cb37-27"></a></span>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb37-1"><a href="#cb37-1"></a>. <span class="kw">tabulate</span> B3</span>
+<span id="cb37-2"><a href="#cb37-2"></a></span>
+<span id="cb37-3"><a href="#cb37-3"></a>Compared to |</span>
+<span id="cb37-4"><a href="#cb37-4"></a>  12 months |</span>
+<span id="cb37-5"><a href="#cb37-5"></a> ago, would |</span>
+<span id="cb37-6"><a href="#cb37-6"></a>    you say |</span>
+<span id="cb37-7"><a href="#cb37-7"></a>   that you |</span>
+<span id="cb37-8"><a href="#cb37-8"></a>  (and your |</span>
+<span id="cb37-9"><a href="#cb37-9"></a><span class="kw">family</span>) are |</span>
+<span id="cb37-10"><a href="#cb37-10"></a>   better o |      Freq.     Percent        Cum.</span>
+<span id="cb37-11"><a href="#cb37-11"></a>------------+-----------------------------------</span>
+<span id="cb37-12"><a href="#cb37-12"></a>          1 |      1,020        8.74        8.74</span>
+<span id="cb37-13"><a href="#cb37-13"></a>          2 |      3,276       28.08       36.82</span>
+<span id="cb37-14"><a href="#cb37-14"></a>          3 |      5,287       45.32       82.14</span>
+<span id="cb37-15"><a href="#cb37-15"></a>          4 |      1,605       13.76       95.89</span>
+<span id="cb37-16"><a href="#cb37-16"></a>          5 |        479        4.11      100.00</span>
+<span id="cb37-17"><a href="#cb37-17"></a>------------+-----------------------------------</span>
+<span id="cb37-18"><a href="#cb37-18"></a>      Total |     11,667      100.00</span>
+<span id="cb37-19"><a href="#cb37-19"></a></span>
+<span id="cb37-20"><a href="#cb37-20"></a>. </span>
+<span id="cb37-21"><a href="#cb37-21"></a>. <span class="kw">replace</span> B3 = 0 <span class="kw">if</span> B3 &lt; 3 </span>
+<span id="cb37-22"><a href="#cb37-22"></a>(4,296 <span class="fu">real</span> changes made)</span>
+<span id="cb37-23"><a href="#cb37-23"></a></span>
+<span id="cb37-24"><a href="#cb37-24"></a>. <span class="kw">replace</span> B3 = 1 <span class="kw">if</span> B3 &gt;= 3</span>
+<span id="cb37-25"><a href="#cb37-25"></a>(7,371 <span class="fu">real</span> changes made)</span>
+<span id="cb37-26"><a href="#cb37-26"></a></span>
+<span id="cb37-27"><a href="#cb37-27"></a>. </span>
 <span id="cb37-28"><a href="#cb37-28"></a>. <span class="kw">tabulate</span> B3</span>
 <span id="cb37-29"><a href="#cb37-29"></a></span>
 <span id="cb37-30"><a href="#cb37-30"></a>Compared to |</span>
