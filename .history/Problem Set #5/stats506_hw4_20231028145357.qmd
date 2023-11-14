@@ -1,0 +1,543 @@
+---
+title: "STATS506 Problem Set #04"
+author: "Fan Zhang"
+date: "10/19/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem 1 - Tidyverse 
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Install and load the package `nycflights13`.
+
+
+```{r} 
+# Load the packages
+library(nycflights13)
+library(tidyverse)
+```
+
+**a. Generate a table (which can just be a nicely printed tibble) reporting the mean and median departure delay per airport. Generate a second table (which again can be a nicely printed tibble) reporting the mean and median arrival delay per airport. Exclude any destination with under 10 flights. Do this exclusion through code, not manually.**
+
+**Additionally,**
+
+- Order both tables in descending mean delay.
+- Both tables should use the airport names not the airport codes.
+- Both tables should print all rows. 
+
+```{r} 
+# Generate table for mean and median departure delay per airport
+flights %>%
+    inner_join(airports, by = c("origin" = "faa")) %>%
+    group_by(name) %>%
+    summarise(mean_dep_delay = mean(dep_delay, na.rm = TRUE),median_dep_delay = median(dep_delay, na.rm = TRUE)) %>%
+    arrange(desc(mean_dep_delay)) %>%
+    print()
+```
+
+```{r} 
+# Generate table for mean and median arrival delay per airport
+flights %>%
+    inner_join(airports, by = c("dest" = "faa")) %>%
+    group_by(name) %>%
+    filter(n() >= 10) %>%
+    summarise(mean_arr_delay = mean(arr_delay, na.rm = TRUE),median_arr_delay = median(arr_delay, na.rm = TRUE)) %>%
+    arrange(desc(mean_arr_delay)) %>%
+    print()
+```
+
+**b. How many flights did the aircraft model with the fastest average speed take? Produce a tibble with 1 row, and entires for the model, average speed (in MPH) and number of flights.**
+
+```{r}
+# Generate table for the aircraft model with the fastest average speed
+flights %>%
+    inner_join(planes, by = c("tailnum")) %>%
+    group_by(model) %>%
+    summarise(avg_speed = mean(speed, na.rm = TRUE), num_flights = n()) %>%
+    filter(num_flights > 0) %>%
+    arrange(desc(avg_speed)) %>%
+    head(1) %>%
+    print()
+```
+
+## Problem 2 - `get_temp()` 
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Load the Chicago NNMAPS data we used in the visualization lectures. Write a function `get_temp()` that allows a user to request the average temperature for a given month. The arguments should be: 
+
+- `month`: Month, either a numeric 1-12 or a string.
+- `year`: A numeric year.
+- `data`: The data set to obtain data from.
+- `celsius`: Logically indicating whether the results should be in celsius. Default `FALSE`.
+- `average_fn`: A function with which to compute the mean. Default is `mean`. 
+
+The output should be a numeric vector of length 1. The code inside the function should, as with the rest of this problem, use `tidyverse`. Be sure to sanitize the input. 
+
+Prove your code works by evaluating the following. Your code should produce the result, or a reasonable error message. 
+
+```{r, eval = FALSE}
+get_temp("Apr", 1999, data = nnmaps)
+get_temp("Apr", 1999, data = nnmaps, celsius = TRUE)
+get_temp(10, 1998, data = nnmaps, average_fn = median)
+get_temp(13, 1998, data = nnmaps)
+get_temp(2, 2005, data = nnmaps)
+get_temp("November", 1999, data =nnmaps, celsius = TRUE,
+        average_fn = function(x) {
+            x %>% sort -> x
+            x[2:(length(x) - 1)] %>% mean %>% return
+        })
+```
+
+Here is the implementation:
+```{r} 
+# Load the package and data 
+library(tidyverse)
+nnmaps <- read.csv("./data/chicago-nmmaps.csv")
+head(nnmaps)
+```
+
+```{r}
+# Define the function
+get_temp <- function(month, 
+                    year, 
+                    data, 
+                    celsius = FALSE, 
+                    average_fn = mean) {
+    # Sanitize the input
+    months_abb <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    months_name <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+    months_num <- c(1:12)
+
+    if (month %in% months_abb) {
+        month <- match(month, months_abb)
+    } else if (month %in% months_name) {
+        month <- match(month, months_name)
+    }
+    else if (month %in% months_num) {
+        month <- as.numeric(month)
+    } else {
+        cat("Invalid month input", month, ". Should be an integer between 1 and 12 (e.g. 1) or a string of month name (e.g. January) or abbreviation (e.g. Jan). Not case sensitive.\n")
+        return 
+    }
+
+    year <- as.integer(year)
+    if (!is.integer(year) || year < 1997 || year > 2000) {
+        cat("Invalid year input", year, ". Should be an integer between 1997 and 2000 (inclusive).\n")
+        return 
+    }
+    if (!is.data.frame(data)) {
+        cat("Invalid data input", data, ". Should be a data frame.\n")
+        return 
+    }
+    if (!is.logical(celsius)) {
+        cat("Input celsius input", celsius, ". Should be a logical value TRUE or FALSE.\n")
+        return 
+    }
+    if (!is.function(average_fn)) {
+        cat("Input average_fn input", average_fn, ". Should be a function.\n")
+        return 
+    }
+
+    # To avoid name conflict, assign the input to temporary variables
+    month_tmp <- month
+    year_tmp <- year 
+    
+    # Compute the average temperature
+    data %>%
+        filter(month_numeric == month_tmp & year == year_tmp) %>%
+        summarise(avg_temp = average_fn(temp)) %>%
+        mutate(avg_temp = ifelse(celsius == TRUE, (avg_temp - 32) * 5 / 9, avg_temp)) %>%
+        pull(avg_temp) %>%
+
+    # Return a numeric vector of length 1
+    return
+}
+```
+
+```{r}
+# Demo
+get_temp("Apr", 1999, data = nnmaps)
+get_temp("Apr", 1999, data = nnmaps, celsius = TRUE)
+get_temp(10, 1998, data = nnmaps, average_fn = median)
+get_temp(13, 1998, data = nnmaps)
+get_temp(2, 2005, data = nnmaps)
+get_temp("November", 1999, data =nnmaps, celsius = TRUE,
+        average_fn = function(x) {
+        x %>% sort -> x
+        x[2:(length(x) - 1)] %>% mean %>% return
+        })
+```
+
+
+## Problem 3 - SAS 
+
+This problem should be done entirely within SAS. 
+
+The `html` output can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p3_sas_result.html) and the `pdf` output can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p3_sas_result.pdf).
+
+
+Access the RECS 2020 data and download a copy of the data. You may import the CSV or load the `sas7bdat` file directly. (This is **not** the 2009 version we used in lecture). You'll probably also need the "Variable and response cookbook" to identify the proper variables. Load or import data into SAS.
+
+```{sas, eval = FALSE}
+/* Load the Data */
+DATA RECS2020;
+    SET '/home/u63648565/recs2020_public_v5.sas7bdat';
+RUN;
+```
+
+**a. What state has the highest percentage of records? What percentage of all records correspond to Michigan? (Don't forget to account for the sampling weights!)**
+
+```{sas, eval = FALSE}
+/* Calculate the percentage of records in each state, order by frequency */
+PROC SURVEYFREQ DATA=RECS2020 ORDER=FREQ ;
+    WEIGHT NWEIGHT;
+    TABLES state_name;
+    ODS OUTPUT OneWay=RECS2020FREQ;
+RUN;
+
+/* Print the state with the hightest percentage of records */
+PROC PRINT DATA=RECS2020FREQ (OBS=1);
+RUN;
+
+/* Print the percentage of all records correspond to Michigan */
+PROC PRINT DATA=RECS2020FREQ;
+    WHERE state_name='Michigan';
+RUN;
+```
+
+According to the result, the state with the highest percentage of records is *California*. 
+
+**b. Generate a histogram of the total electricity cost in dollars, amongst those with a strictly positive cost.**
+
+```{sas, eval = FALSE}
+/* Filter data with strictly positive cost */
+DATA RECS2020_DOLLAREL_POS;
+    SET RECS2020;
+    IF dollarel > 0;
+RUN;
+
+/* Generate a histogram of the total electricity cost in dollars */
+PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;
+    VAR dollarel;
+    HISTOGRAM;
+RUN;
+```
+
+**c. Generate a histogram of the log of the total electricity cost.**
+
+```{sas, eval = FALSE}
+DATA RECS2020_DOLLAREL_POS;
+    SET RECS2020_DOLLAREL_POS;
+    IF dollarel > 0;
+    log_dollarel = log(dollarel);
+RUN;
+
+/* Generate a histogram of the log of the total electricity cost */
+PROC UNIVARIATE DATA=RECS2020_DOLLAREL_POS;
+    VAR log_dollarel;
+    HISTOGRAM;
+RUN;
+```
+
+**d. Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage. (Don't forget weights.)**
+
+```{sas, eval = FALSE}
+/* Fit a linear regression model predicting the log of the total electricity cost based upon the number of rooms in the house and whether or not the house has a garage */
+PROC SURVEYREG DATA=RECS2020_DOLLAREL_POS;
+    WEIGHT NWEIGHT;
+    MODEL log_dollarel = totrooms prkgplc1;
+    OUTPUT out=RECS2020_REG_RESULT p=predicted_log_dollarel;
+RUN;
+```
+
+**e. Use that model to generate predicted values and create a scatterplot of predicted total electricity cost vs actual total electricity cost (not on the log scale).**
+
+```{sas, eval = FALSE}
+/* Generate predicted values of dollarel */
+DATA RECS2020_REG_RESULT;
+    SET RECS2020_REG_RESULT;
+    predicted_dollarel = exp(predicted_log_dollarel);
+RUN;
+
+PROC SGPLOT DATA=RECS2020_REG_RESULT;
+    SCATTER x=dollarel y=predicted_dollarel;
+RUN;
+```
+
+## Problem 4 - Multiple tools
+
+It is not uncommon during an analysis to use multiple statistical tools as each has their own pros and cons. The problem is based on an actual analysis I've done, with a different data set. The data was originally stored in a large SAS database, but the researcher was most familiar with Stata so I carried out the analysis there. During the course of the project, there was a particular analysis that Stata could not do, so I switched over to R. We're going to mimic this workflow here.
+
+We'll use the Survey of Household Economics and Decisionmaking from the Federal Reserve. The data and Codebook documentation can be found at [https://www.federalreserve.gov/consumerscommunities/shed_data.htm](https://www.federalreserve.gov/consumerscommunities/shed_data.htm). Use the 2022 version. 
+
+The researcher's interest is in whether long-term concerns about climate change impact current day concerns about financial stability. To address this, the particular research question of interest is whether **the respondent's family is better off, or worse off financially compared to 12 month's ago** can be predicted by **thinking that the chance of experiencing a natural disaster or severe weather event will be higher, lower or about the same in 5 years**. We also want to control for 
+
+- How they rate the economic conditions today in the country.
+- Whether they own (with or without a mortgage) or rent or neither their home.
+- Education (use the 4-category version)
+- Race (use the 5-category version)
+
+We're going to pretend the raw data is extremely large that wee need to extract the subset of the data we're going to use before we can open it in Stata or R. 
+
+Additionally, the data comes from a complex survey design, so we need to account for that in the analysis. 
+
+```{sass, eval = FALSE}
+/* Load the Data */
+DATA public2022;
+    SET '/home/u63648565/public2022.sas7bdat';
+RUN;
+```
+
+**a. Take a look at the Codebook. For very minor extra credit, how was the Codebook generated? (No loss of points if you skip this).**
+
+According to the format of this file, I guess the Codebook was generated by Stata.
+
+### SAS 
+**b. Import the data into SAS (you can load the SAS data directly or import the CSV) and use `proc sql` to select only the variables you'll need for your analysis, as well as subsetting the data if needed. You can carry out variable transformations now, or save it for Stata.**
+
+According to the codebook, we can find the following variables: 
+
+- `CaseID` CaseID 2022
+- `B3` Compared to 12 months ago, would you say that you (and your family) are better off, the same or worse off financially?
+- `ND2` Five years from now, do you think that the chance that you will experience a natural disaster or severe weather event will be higher, lower or about the same as it is now? 
+- `B7_b` In this country - How would you rate economic conditions today?
+- `GH1` This section will ask some questions about your home and your car. Do you (and/or your spouse or partner) own your home with a mortgage or loan / own your home free and clear (without a mortgage or loan) / pay rent / neither own nor pay rent.
+- `ppeducat` Education (4 categories)
+- `ppethm` Race / Ethnicity
+
+To select variables above, we run the following SAS code:
+```{sas, eval = FALSE}
+/* Select specific variables */
+PROC SQL; 
+    CREATE TABLE public2022_use AS 
+    SELECT 
+        CaseID,
+        B3, 
+        ND2, 
+        B7_b, 
+        GH1, 
+        ppeducat,
+        ppethm 
+    FROM public2022;
+RUN;
+```
+
+**c. Get the data out of SAS and into Stata. (Note that this could mean saving the data in SAS format, then importing into Stata; or exporting from SAS into Stata format then loading it in Stata; or exporting from SAS into a generic format and importing into Stata - whichever works for you.)**
+
+```{sas, eval = FALSE}
+/* Export the data */
+PROC EXPORT DATA=public2022_use
+            OUTFILE='/home/u63648565/public2022_use.dta'
+            DBMS=DTA REPLACE;
+RUN;
+```
+
+(Note: Include you SAS code in the Quarto as specified; you **do not** need to include an HTML copy of the SAS results for this question.)
+
+### Stata
+
+The `.Do` file can be found [here](https://github.com/cajole-fff/UMich-STATS506-FanZhang/blob/main/Problem%20Set%20%234/stats506_hw4p4.Do).
+
+**d. Demonstrate that you've successfully extracted the appropriate data by showing the number of observations and variables. (Report these values via Stata code don't just say "As we see in the Properties window". The Codebook should give you a way to ensure the number of rows is as expected.)**
+
+```{stata, eval = FALSE}
+. use "./data/public2022/public2022_use.dta", clear
+
+. 
+. describe 
+
+Contains data from ./data/public2022/public2022_use.dta
+ Observations:        11,667                  
+    Variables:             8                  
+--------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+--------------------------------------------------------------------------------
+CaseID          double  %12.0g                CaseID 2022
+B3              double  %12.0g                Compared to 12 months ago, would
+                                                you say that you (and your
+                                                family) are better o
+ND2             double  %12.0g                Five years from now, do you think
+                                                that the chance that you will
+                                                experience a nat
+B7_b            double  %12.0g                In this country - How would you
+                                                rate economic conditions today:
+GH1             double  %12.0g                This section will ask some
+                                                questions about your home and
+                                                your car. Do you:
+ppeducat        double  %12.0g                Education (4 Categories)
+ppethm          double  %12.0g                Race / Ethnicity
+weight_pop      double  %12.0g                Post-stratification weight - Main
+                                                qualified respondents scaled to
+                                                U.S. populatio
+--------------------------------------------------------------------------------
+Sorted by: 
+
+. 
+. display _N
+11667
+```
+
+As shown in the code book, there should be totally 11,667 observations, and it is verified in the output of Stata. Furthermore, the description shows all of the variables in need. 
+
+**e. The response variable is a Likert scale; convert it to a binary of worse off versus same/better.**
+
+```{stata, eval = FALSE}
+. tabulate B3
+
+Compared to |
+  12 months |
+ ago, would |
+    you say |
+   that you |
+  (and your |
+family) are |
+   better o |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      1,020        8.74        8.74
+          2 |      3,276       28.08       36.82
+          3 |      5,287       45.32       82.14
+          4 |      1,605       13.76       95.89
+          5 |        479        4.11      100.00
+------------+-----------------------------------
+      Total |     11,667      100.00
+
+. 
+. replace B3 = 0 if B3 < 3 
+(4,296 real changes made)
+
+. replace B3 = 1 if B3 >= 3
+(7,371 real changes made)
+
+. 
+. tabulate B3
+
+Compared to |
+  12 months |
+ ago, would |
+    you say |
+   that you |
+  (and your |
+family) are |
+   better o |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      4,296       36.82       36.82
+          1 |      7,371       63.18      100.00
+------------+-----------------------------------
+      Total |     11,667      100.00
+```
+
+**f. Use the following code to tell Stata that the data is from a complex sample:**
+
+```{stata, eval = FALSE}
+svyset CaseID [pw=weight_pop]
+```
+
+This is the result: 
+
+```{stata, eval = FALSE}
+. svyset CaseID [pw=weight_pop]
+
+Sampling weights: weight_pop
+             VCE: linearized
+     Single unit: missing
+        Strata 1: <one>
+ Sampling unit 1: CaseID
+           FPC 1: <zero>
+```
+
+(Modify `CaseID` and `weight_pop` as appropriate if you have different variable names; those names are taken from the Codebook.)
+
+Carry out a logistic regression model accounting for the complex survey design. Be sure to treat variables you think should be categorical appropriately. From these results, provide an answer to the researchers question of interest.
+
+Notice that the model does not provide a pseudo-$R^2$. R has the functionality to do this.
+
+```{stata, eval = FALSE}
+. svy: logit B3 i.ND2 i.B7_b i.GH1 i.ppeducat i.ppethm
+(running logit on estimation sample)
+
+Survey: Logistic regression
+
+Number of strata =      1                        Number of obs   =      11,667
+Number of PSUs   = 11,667                        Population size = 255,114,223
+                                                 Design df       =      11,666
+                                                 F(17, 11650)    =       57.01
+                                                 Prob > F        =      0.0000
+
+------------------------------------------------------------------------------
+             |             Linearized
+          B3 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         ND2 |
+          2  |   .0913004   .0920118     0.99   0.321    -.0890581    .2716589
+          3  |   .0682048   .0847673     0.80   0.421    -.0979534     .234363
+          4  |   .2572784   .2051091     1.25   0.210    -.1447698    .6593266
+          5  |   .2283295   .1687689     1.35   0.176    -.1024858    .5591447
+             |
+        B7_b |
+          2  |   1.113445   .0488499    22.79   0.000     1.017691    1.209199
+          3  |   1.809035   .0796656    22.71   0.000     1.652877    1.965193
+          4  |   2.490658   .3465224     7.19   0.000     1.811416      3.1699
+             |
+         GH1 |
+          2  |  -.0718446   .0561684    -1.28   0.201    -.1819441    .0382549
+          3  |   .0200665   .0587412     0.34   0.733     -.095076     .135209
+          4  |   .3464789   .1000023     3.46   0.001     .1504578    .5425001
+             |
+    ppeducat |
+          2  |   .0903879   .1035049     0.87   0.383     -.112499    .2932747
+          3  |   .1241602   .1008208     1.23   0.218    -.0734654    .3217857
+          4  |   .2522355   .0996316     2.53   0.011     .0569409      .44753
+             |
+      ppethm |
+          2  |   .7079099   .0811535     8.72   0.000     .5488354    .8669843
+          3  |   .3615687   .1195093     3.03   0.002     .1273104     .595827
+          4  |   .1672235   .0712331     2.35   0.019     .0275947    .3068523
+          5  |   -.097413    .137004    -0.71   0.477    -.3659637    .1711377
+             |
+       _cons |  -.5103152   .1295378    -3.94   0.000     -.764231   -.2563994
+------------------------------------------------------------------------------
+```
+
+Turn back to the research question, it is going to explore whether `B3` can be predicted by `ND2`. According to the regression summary from Stata, the four coefficients of `ND2` all have a p-value greater than 0.05, and the corresponding confidence intervals all contain 0. Therefore, we can conclude that `ND2` is not a significant predictor of `B3`.
+
+**g. Get the data out of Stata and into R.**
+
+```{stata, eval = FALSE}
+. export delimited using "./data/public2022/public2022_use.csv", replace
+(file ./data/public2022/public2022_use.csv not found)
+file ./data/public2022/public2022_use.csv saved
+```
+
+### R
+
+**h. Use the `survey` package to obtain the pseudo-$R^2$. Use the following code to set up the complex survey design:**
+
+```{r, eval = FALSE}
+svydesign(id = ~ caseid, weight = ~ weight_pop, data = dat)
+```
+
+**Obtain the pseudo-$R^2$ value for the logistic model fit above and report it.**
+
+(**Note:** If you decide to re-fit the model in R, read the first paragraph of the "details" in the model-fitting function help to choose the appropriate family.)
+
+```{r}
+library(survey)
+public2022_use <- read.csv("./data/public2022/public2022_use.csv")
+design <- svydesign(id = ~ CaseID, weight = ~ weight_pop, data = public2022_use)
+model <- svyglm(B3 ~ as.factor(ND2) + as.factor(B7_b) + as.factor(GH1) + as.factor(ppeducat) + as.factor(ppethm), design = design, family = quasibinomial)
+summary(model)
+psrsq(model)
+```
+
+Obviously, the regression in R yields the same result as the one in Stata. The pseudo-$R^2$ value is `0.1090005`, which is relatively small. It means that the model does not fit the data well.
