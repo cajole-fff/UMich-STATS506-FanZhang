@@ -1,0 +1,20 @@
+---
+title: "STATS506 Problem Set #05"
+author: "Fan Zhang"
+date: "11/19/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem 1 - Plotting 
+
+Use the `nnmaps` data set again. I'd recommend using `ggplot2` for these, but you can do them in base R or `plotly` if you'd prefer.
+
+a. Produce a graph of the `mean` monthly temperature in celsius. Draw a scatter-plot where the $x$-axis is month and the $y$-axis is the average monthly temperature in celsius. Add a line connecting the points within each season and color the lines and points by season (same color for lines and points in the same season)

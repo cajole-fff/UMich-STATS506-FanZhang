@@ -1,0 +1,320 @@
+---
+title: "STATS506 Problem Set #05"
+author: "Fan Zhang"
+date: "11/19/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem 1 - Plotting 
+
+Use the `nnmaps` data set again. I'd recommend using `ggplot2` for these, but you can do them in base R or `plotly` if you'd prefer.
+
+a. Produce a graph of the `mean` monthly temperature in celsius. Draw a scatter-plot where the $x$-axis is month and the $y$-axis is the average monthly temperature in celsius. Add a line connecting the points within each season and color the lines and points by season (same color for lines and points in the same season). Be sure both $x$-axis and the legend are ordered appropriately, and that all labels/titles are clear and ready for publication (e.g. no variable names). 
+
+```{r}
+# Load data
+nnmaps <- read.csv("./data/chicago-nnmaps.csv")
+# Convert temperature to celsius
+nnmaps$tempC <- (nnmaps$temp - 32) * 5 / 9
+
+# Plot monthly temperature in celsius (averaged over year) 
+library(ggplot2)
+library(dplyr)
+
+nnmaps$month <- factor(nnmaps$month, levels = month.abb)
+nnmaps$year_month <- paste(nnmaps$year, nnmaps$month, sep = "-")
+
+nnmaps_summary_temp <- nnmaps %>%
+    mutate(
+        date = as.POSIXct(date, format = "%Y-%m-%d"),
+        year_month = format(date, "%Y-%m")
+    ) %>%
+    group_by(month, season) %>%
+    summarise(avg_tempC = mean(tempC))
+
+ggplot(nnmaps_summary_temp, aes(x = month, y = avg_tempC, color = season, group = season)) +
+    geom_point() +
+    geom_line() +
+    labs(
+        x = "Year-Month",
+        y = "Average Temperature (Celsius)",
+        title = "Average Monthly Temperature in Chicago",
+        color = "Season"
+    )
+```
+
+b. Produce a similar plot with four sets of lines: mean monthly temperature in celsius, mean monthly O3, mean monthly PM10, and mean monthly dewpoint. Figure out a way to distinguish between the four lines. Again, make sure the plot is publication-ready (clean and clear labels). Use the plot to answer the following question: 
+
+"Which of the four variables seems to have the least seasonal trend?"
+
+```{r}
+nnmaps_summary <- nnmaps %>%
+    mutate(
+        date = as.POSIXct(date, format = "%Y-%m-%d")
+    ) %>%
+    group_by(month, season) %>%
+    summarise(
+        avg_tempC = mean(tempC, na.rm = TRUE),
+        avg_O3 = mean(o3, na.rm = TRUE),
+        avg_PM10 = mean(pm10, na.rm = TRUE),
+        avg_dewpoint = mean(dewpoint, na.rm = TRUE)
+    )
+
+# Plot
+library(ggplot2)
+library(dplyr)
+
+ggplot(nnmaps_summary) + 
+    geom_point(aes(x = month, y = avg_tempC, color = season)) +
+    geom_line(aes(x = month, y = avg_tempC, color = season, group = season, linetype = "Temperature")) +
+    geom_point(aes(x = month, y = avg_O3, color = season)) +
+    geom_line(aes(x = month, y = avg_O3, color = season, group = season, linetype = "O3")) +
+    geom_point(aes(x = month, y = avg_PM10, color = season)) +
+    geom_line(aes(x = month, y = avg_PM10, color = season, group = season, linetype = "PM10")) +
+    geom_point(aes(x = month, y = avg_dewpoint, color = season)) +
+    geom_line(aes(x = month, y = avg_dewpoint, color = season, group = season, linetype = "Dew Point")) +
+    labs(
+        x = "Month",
+        y = "Value",
+        title = "Monthly Average Measurements in Chicago",
+        color = "Season",
+        linetype = "Measurement"
+    ) +
+    scale_linetype_manual(values = c("Temperature" = "solid", "O3" = "dashed", "PM10" = "dotdash", "Dew Point" = "longdash"))
+```
+
+From the plots above, we can see that the seasonal trend of `O3` is the least obvious.
+
+## Problem 2 - OOP Programming
+
+Create a class to represent a polynomial expression (such as $7x^3 - 3x + 2$) called `poly`. Do this using S4. 
+
+a. For the `poly` class, define the following: 
+
+- A constructor 
+- A validator 
+- A `show` method 
+- Addition and substraction 
+
+```{r}
+# Define the class
+setClass(
+    "poly", 
+    slots = list(
+        coefficients = "numeric", 
+        exponents = "numeric"
+        )
+    )
+
+setMethod(
+    "initialize",
+    "poly",
+    function(.Object, expression = NA, coefficients = numeric(0), exponents = numeric(0)) {
+        if (!is.na(expression) && is.character(expression)) {
+            # Evaluate the expression
+            terms <- unlist(strsplit(expression, split = "(?<=\\D)(?=[+-])|(?<=[+-])(?=\\D)", perl = TRUE))
+            coefficients <- numeric()
+            exponents <- numeric()
+            current_sign <- 1
+            for (term in terms) {
+                if (term %in% c("+", "-")) {
+                    current_sign <- ifelse(term == "+", 1, -1)
+                } else if (nzchar(term)) {
+                    term <- gsub("\\s+", "", term) # Ignore spaces
+
+                    # When coefficient is 1 or -1, the coefficient part is omitted
+                    if (grepl("x", term) && !grepl("\\^", term)) {
+                        coef <- ifelse(grepl("x", term) && nchar(gsub("x", "", term)) == 0, current_sign, current_sign * as.numeric(gsub("x", "", term)))
+                        exp <- 1
+                    } else {
+                        parts <- strsplit(term, split = "x\\^")[[1]]
+                        coef <- ifelse(length(parts[1]) == 0, current_sign, current_sign * as.numeric(parts[1]))
+                        exp <- ifelse(length(parts) == 2, as.numeric(parts[2]), 0)
+                    }
+                    
+                    coefficients <- c(coefficients, coef)
+                    exponents <- c(exponents, exp)
+                }
+            }
+        } else {
+            if (length(coefficients) != length(exponents)) {
+                stop("coefficients and exponents must be of the same length")
+            }
+            if (any(is.na(coefficients)) || any(is.na(exponents))) {
+                stop("coefficients and exponents must not contain NA values")
+            }
+        }
+
+        .Object@coefficients <- coefficients
+        .Object@exponents <- exponents
+
+        validObject(.Object)
+        return(.Object)
+    }
+)
+
+make_poly <- function(expression) {
+    new("poly", expression = expression)
+}
+
+# Define the validator
+setValidity("poly", function(object) {
+    # Check that the coefficients and exponents are the same length
+    if (length(object@coefficients) != length(object@exponents)) 
+        return("Length of coefficients and exponents must be the same.")
+    # Check that the exponents are non-negative integers
+    if (any(object@exponents < 0) || any(object@exponents != as.integer(object@exponents))) 
+        return("Exponents must be non-negative integers.")
+    # Check that the coefficients are numeric
+    if (!is.numeric(object@coefficients)) 
+        return("Coefficients must be numeric.")
+    TRUE
+})
+
+# Define the show method
+setMethod("show", "poly", function(object) {
+    terms <- character()
+    for (i in seq_along(object@coefficients)) {
+        coef <- object@coefficients[i]
+        exp <- object@exponents[i]
+
+        if (coef == 0) next
+        else if (exp == 0) term <- as.character(coef)
+        else if (exp == 1) term <- ifelse(coef == 1, "x", ifelse(coef == -1, "-x", paste0(coef, "x")))
+        else term <- ifelse(coef == 1, paste0("x^", exp),
+                            ifelse(coef == -1, paste0("-x^", exp), paste0(coef, "x^", exp)))
+        terms <- c(terms, term)
+    }
+
+    # Combine the terms into a single string
+    poly_str <- terms[1]
+    for (i in 2:length(terms)) {
+        # Add sign according to the coefficient
+        if (startsWith(terms[i], "-")) {
+            poly_str <- paste(poly_str, "-", substr(terms[i], 2, nchar(terms[i])))
+        } else {
+            poly_str <- paste(poly_str, "+", terms[i])
+        }
+    }
+
+    cat(poly_str, "\n")
+})
+
+# Define the addition method
+setMethod("+", signature(e1 = "poly", e2 = "poly"), function(e1, e2) {
+    # Combine exponents and coefficients
+    combined <- rbind(
+        cbind(e1@coefficients, e1@exponents),
+        cbind(e2@coefficients, e2@exponents)
+    )
+    # Order by exponents
+    combined <- combined[order(combined[, 2], decreasing = TRUE), ]
+    # Aggregate coefficients by exponents
+    result <- aggregate(combined[, 1], list(combined[, 2]), sum)
+    # Create a new poly object and show it 
+    new("poly", coefficients = rev(result$x), exponents = rev(result$Group.1))
+})
+
+
+# Define the substraction method
+setMethod("-", signature(e1 = "poly", e2 = "poly"), function(e1, e2) {
+    # Combine exponents and coefficients, take negative of the coefficients of e2
+    combined <- rbind(
+        cbind(e1@coefficients, e1@exponents),
+        cbind(-e2@coefficients, e2@exponents)
+    )
+    # Order by exponents
+    combined <- combined[order(combined[, 2], decreasing = TRUE), ]
+    # Aggregate coefficients by exponents
+    result <- aggregate(combined[, 1], list(combined[, 2]), sum)
+    # Create a new poly object and show it 
+    new("poly", coefficients = rev(result$x), exponents = rev(result$Group.1))
+})
+```
+
+b. Use your `poly` class to run the following code: 
+```{r}
+p1 <- make_poly("3x^2 + 2")
+p2 <- make_poly("7x^3 - 2x^2 - x + 17")
+p1
+p2
+p1 + p2
+p1 - p2
+```
+
+
+## Problem 3 - Tidyverse
+
+
+Use the `tidyverse` for this problem. In particular, use piping and `dplyr` as much as you are able. **Note:** Use of any deprecated functions will result in a point loss. 
+
+Install and load the package `nycflights13`.
+
+**a. Generate a table (which can just be a nicely printed tibble) reporting the mean and median departure delay per airport. Generate a second table (which again can be a nicely printed tibble) reporting the mean and median arrival delay per airport. Exclude any destination with under 10 flights. Do this exclusion through code, not manually.**
+
+**Additionally,**
+
+- Order both tables in descending mean delay.
+- Both tables should use the airport names not the airport codes.
+- Both tables should print all rows. 
+
+```{r}
+library(nycflights13)
+library(data.table)
+
+# Convert flights and airports to data.table
+flights_dt <- as.data.table(flights)
+airports_dt <- as.data.table(airports)
+
+# Filter out airports with less than 10 flights
+valid_origins <- flights_dt[, .N, by = .(origin)][N >= 10, origin]
+filtered_flights <- flights_dt[origin %in% valid_origins]
+
+dep_delay_table <- filtered_flights[, .(mean_dep_delay = mean(dep_delay, na.rm = TRUE),
+                                        median_dep_delay = median(dep_delay, na.rm = TRUE)
+                                    ), by = .(origin)]
+# Add airport names
+dep_delay_table <- airports_dt[dep_delay_table, on = .(faa = origin), 
+                                .(name, mean_dep_delay, median_dep_delay)]
+# Order by mean departure delay
+dep_delay_table <- dep_delay_table[order(-mean_dep_delay)]
+dep_delay_table
+
+# Similar steps for the arrival delay table
+arr_delay_table <- filtered_flights[, .(mean_arr_delay = mean(arr_delay, na.rm = TRUE),
+                                        median_arr_delay = median(arr_delay, na.rm = TRUE)
+                                    ), by = .(dest)]
+# Add airport names
+arr_delay_table <- airports_dt[arr_delay_table, on = .(faa = dest), 
+                                .(name, mean_arr_delay, median_arr_delay)]
+# Order by mean arrival delay
+arr_delay_table <- arr_delay_table[order(-mean_arr_delay)]
+arr_delay_table
+```
+
+
+**b. How many flights did the aircraft model with the fastest average speed take? Produce a tibble with 1 row, and entires for the model, average speed (in MPH) and number of flights.**
+
+
+```{r}
+planes_dt <- as.data.table(planes)
+# Join flights and planes
+flights_planes_dt <- flights_dt[planes_dt, on = .(tailnum)]
+
+# Calculate average speed and number of flights for each model
+result_dt <- flights_planes_dt[, .(avg_speed = mean(speed, na.rm = TRUE), num_flights = .N), by = .(model)]
+result_dt <- result_dt[!is.na(avg_speed) & num_flights > 0]
+
+# Order by average speed
+fastest_model_dt <- result_dt[order(-avg_speed)][1]
+
+print(fastest_model_dt)
+```
