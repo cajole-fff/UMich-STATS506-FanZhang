@@ -39,7 +39,7 @@ library(future)
 library(furrr)
 data(flights)
 
-num_bootstrap <- 50
+num_bootstrap <- 1000
 ```
 
 #### Without any parallel processing

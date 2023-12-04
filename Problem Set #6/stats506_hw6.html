@@ -3198,7 +3198,7 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="fu">library</span>(furrr)</span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="fu">data</span>(flights)</span>
 <span id="cb5-5"><a href="#cb5-5"></a></span>
-<span id="cb5-6"><a href="#cb5-6"></a>num_bootstrap <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-6"><a href="#cb5-6"></a>num_bootstrap <span class="ot">&lt;-</span> <span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="without-any-parallel-processing" class="level4">
 <h4 class="anchored" data-anchor-id="without-any-parallel-processing">Without any parallel processing</h4>
@@ -3243,8 +3243,8 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code># A tibble: 3 × 4
   origin lower_ci upper_ci  mean
   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-1 EWR        153.     153.  153.
-2 JFK        179.     179.  179.
+1 EWR        153.     154.  153.
+2 JFK        178.     179.  178.
 3 LGA        118.     118.  118.</code></pre>
 </div>
 </div>
@@ -3302,8 +3302,8 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code># A tibble: 3 × 4
   origin lower_ci upper_ci  mean
   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-1 EWR        153.     153.  153.
-2 JFK        178.     178.  178.
+1 EWR        153.     154.  153.
+2 JFK        178.     179.  178.
 3 LGA        118.     118.  118.</code></pre>
 </div>
 </div>
@@ -3335,8 +3335,8 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code># A tibble: 3 × 4
   origin lower_ci upper_ci  mean
   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-1 EWR        153.     153.  153.
-2 JFK        178.     178.  178.
+1 EWR        153.     154.  153.
+2 JFK        178.     179.  178.
 3 LGA        118.     118.  118.</code></pre>
 </div>
 </div>
@@ -3346,18 +3346,18 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">print</span>(time_without_parallel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   user  system elapsed 
-  4.051   0.120   4.172 </code></pre>
+<pre><code>    user   system  elapsed 
+1213.366   11.369 1224.934 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">print</span>(time_with_parallel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.001   0.000   1.334 </code></pre>
+  0.014   0.000 284.380 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">print</span>(time_with_future)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.906   0.100   5.333 </code></pre>
+ 61.308   3.467 330.661 </code></pre>
 </div>
 </div>
 <p>As we can see, the parallel version is much faster than the non-parallel version. The <code>future</code> package is slower than the <code>parallel</code> package, but it is still faster than the non-parallel version. It might be because that the <code>future</code> package has some special features handling the random number generation, which makes it slower.</p>
