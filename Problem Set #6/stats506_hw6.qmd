@@ -1,0 +1,171 @@
+---
+title: "STATS506 Problem Set #06"
+author: "Fan Zhang"
+date: "12/04/2023"
+format:
+    html:
+        embed-resources: true 
+        code-line-numbers: true
+        # code-fold: true
+editor: 
+    render-on-save: false 
+---
+
+GitHub Repository: [https://github.com/cajole-fff/UMich-STATS506-FanZhang/](https://github.com/cajole-fff/UMich-STATS506-FanZhang/)
+
+## Problem - Stratified Bootstrapping
+
+If a sample has a categorical variable with small groups, bootstrapping can be tricky. Consider a situation where `n = 100`, but there is some categorical variable `g` where category `g = 1` has only $2$ observations. If we resample with replacement $100$ times from those observations, there is a $$ \left(\frac{2}{100}\right)^{100} \approx 13\%$$ chance that the bootstrap sample does not include either observation from `g = 1`. This implies that if we are attempting to obtain a bootstrap estimate in group `g = `, $13\%$ of the bootstrapped samples will have no observations from that group and thus unable to produce an estimate. 
+
+A way around this is to carry out stratified bootstrap: Instead of taking a sample with replacement of the whole sample, take separate samples with replacement within each strata of the same size of the strata, then combine those resamples to generate the bootstrap sample. 
+
+Use the `flights` data from `nycflights13` package. Use stratified bootstrapping by `dests` to estimate the average `air_time` for flights within each origin and produce a table including the estimates and confidence intervals for each `origin`. 
+
+Carry this our two ways:
+
+1. Without any parallel processing
+2. With some form of parallel processing (either **parallel** or **futures package**). (For every minor extra credit, implement with both packages.)
+
+Generate at least $1,000$ bootstrapped samples. Report the performance difference between the versions. 
+
+(Note: On my computer, this code runs for about 15-20 minutes. If yours takes substantially longer than that, I'd recommend spending some time seeing if you can obtain any speed gains. It might help to start with a smaller number of replicates to develop the code and optimize performance prior to running the longer job.)
+
+```{r}
+# Load packages and data
+library(nycflights13)
+library(dplyr)
+library(parallel)
+library(future)
+library(furrr)
+data(flights)
+
+num_bootstrap <- 50
+```
+
+#### Without any parallel processing
+
+```{r}
+# Define a function to carry out stratified bootstrapping
+bootstrap_func <- function(data, n_bootstrap) {
+    set.seed(123)
+    dests <- unique(data$dest)
+
+    # Carry out stratified bootstrapping
+    bootstrap_results <- lapply(1:n_bootstrap, function(i) {
+        sampled_data <- lapply(dests, function(dest) {
+            dest_data <- data[data$dest == dest, ]
+            sample_n(dest_data, size = nrow(dest_data), replace = TRUE)
+        })
+        
+        sampled_data_combined <- bind_rows(sampled_data)
+
+        sampled_data_combined %>%
+            group_by(origin) %>%
+            summarise(avg_air_time = mean(air_time, na.rm = TRUE))
+    })
+
+    all_results <- bind_rows(bootstrap_results)
+
+    # Calculate the confidence interval
+    all_results %>%
+        group_by(origin) %>%
+        summarise(
+            lower_ci = quantile(avg_air_time, probs = 0.025),
+            upper_ci = quantile(avg_air_time, probs = 0.975),
+            mean = mean(avg_air_time)
+        )
+}
+
+time_without_parallel <- system.time({
+    bootstrap_data_without_parallel <- bootstrap_func(flights, n_bootstrap = num_bootstrap)
+})
+
+bootstrap_data_without_parallel
+```
+
+#### With parallel package `parallel`
+
+
+```{r}
+bootstrap_single_stratum <- function(data, dests, seed) {
+    set.seed(seed)
+
+    # Carry out stratified bootstrapping
+    sampled_data <- lapply(dests, function(dest) {
+        dest_data <- data[data$dest == dest, ]
+        sample_n(dest_data, size = nrow(dest_data), replace = TRUE)
+    })
+
+    # Combine the sampled data
+    sampled_data_combined <- bind_rows(sampled_data)
+
+    # Calculate the average air time
+    sampled_data_combined %>%
+        group_by(origin) %>%
+        summarise(avg_air_time = mean(air_time, na.rm = TRUE))
+}
+
+plan(multisession, workers = detectCores() - 1)
+num_cores <- detectCores() - 1
+cl <- makeCluster(num_cores)
+
+cEQ <- clusterEvalQ(cl, {
+    library(dplyr)
+})
+
+clusterExport(cl, varlist = c("flights", "bootstrap_single_stratum"))
+
+time_with_parallel <- system.time({
+    results_parallel <- parLapply(cl, 1:num_bootstrap, function(i) {
+        bootstrap_single_stratum(flights, unique(flights$dest), i)
+    })
+})
+
+stopCluster(cl)
+
+all_results <- do.call(rbind, results_parallel)
+ci_results <- all_results %>%
+    group_by(origin) %>%
+    summarise(
+        lower_ci = quantile(avg_air_time, probs = 0.025),
+        upper_ci = quantile(avg_air_time, probs = 0.975),
+        mean = mean(avg_air_time)
+    )
+
+print(ci_results)
+```
+
+#### With futures package `future`
+
+```{r}
+plan(multisession, workers = detectCores() - 1)
+options(future.rng.onMisuse = "ignore")
+
+time_with_future <- system.time({
+    results_future <- future_map_dfr(1:num_bootstrap, function(i) {
+        bootstrap_single_stratum(flights, unique(flights$dest), i)
+    })
+})
+
+all_results <- bind_rows(results_future)
+
+ci_results <- all_results %>%
+    group_by(origin) %>%
+    summarise(
+        lower_ci = quantile(avg_air_time, probs = 0.025),
+        upper_ci = quantile(avg_air_time, probs = 0.975),
+        mean = mean(avg_air_time)
+    )
+
+print(ci_results)
+```
+
+#### Performance comparison
+
+```{r}
+print(time_without_parallel)
+print(time_with_parallel)
+print(time_with_future)
+```
+
+As we can see, the parallel version is much faster than the non-parallel version. The `future` package is slower than the `parallel` package, but it is still faster than the non-parallel version. It might be because that the `future` package has some special features handling the random number generation, which makes it slower.
